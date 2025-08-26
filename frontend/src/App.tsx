@@ -1,138 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { ConfigProvider, Layout, Menu, Card, Button, Typography } from 'antd';
+import { CalendarOutlined, FileTextOutlined, BarChartOutlined } from '@ant-design/icons';
+import { WeeksPage, AddReviewPage, ViewReviewsPage, EditReviewPage } from './components';
 import { apiService, ApiResponse, HealthData } from './services/api';
+import 'antd/dist/reset.css';
 
-interface ApiStatus {
-  health: ApiResponse<HealthData> | null;
-  welcome: ApiResponse | null;
-  status: ApiResponse<HealthData> | null;
-  loading: boolean;
-  error: string | null;
+const { Header, Content } = Layout;
+const { Title, Paragraph } = Typography;
+
+function HomePage() {
+  return (
+    <div style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <Title level={1} style={{ color: '#1890ff', marginBottom: '16px' }}>
+          EagleKidz Church Management
+        </Title>
+        <Paragraph style={{ fontSize: '18px', color: '#666' }}>
+          Manage weekly church activities and reviews
+        </Paragraph>
+      </div>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        <Link to="/weeks" style={{ textDecoration: 'none' }}>
+          <Card
+            hoverable
+            style={{ height: '100%', borderRadius: '12px' }}
+            bodyStyle={{ padding: '32px' }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <CalendarOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '16px' }} />
+              <Title level={3} style={{ marginBottom: '12px' }}>Weeks Management</Title>
+              <Paragraph style={{ marginBottom: '24px', color: '#666' }}>
+                Create and manage weekly periods for church activities
+              </Paragraph>
+              <Button type="primary" size="large">
+                Manage Weeks
+              </Button>
+            </div>
+          </Card>
+        </Link>
+        
+        <Card
+          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
+          bodyStyle={{ padding: '32px' }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <FileTextOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
+            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Reviews</Title>
+            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
+              Track weekly reviews and improvements
+            </Paragraph>
+            <Button disabled size="large">
+              Coming Soon
+            </Button>
+          </div>
+        </Card>
+        
+        <Card
+          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
+          bodyStyle={{ padding: '32px' }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <BarChartOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
+            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Reports</Title>
+            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
+              Generate reports and analytics
+            </Paragraph>
+            <Button disabled size="large">
+              Coming Soon
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function Navigation() {
+  const location = useLocation();
+  
+  const getSelectedKey = () => {
+    if (location.pathname === '/') return 'home';
+    if (location.pathname.startsWith('/weeks')) return 'weeks';
+    return 'home';
+  };
+
+  const menuItems = [
+    {
+      key: 'home',
+      icon: <CalendarOutlined />,
+      label: <Link to="/" style={{ textDecoration: 'none', marginLeft: '1px' }}>Home</Link>,
+    },
+    {
+      key: 'weeks',
+      icon: <CalendarOutlined />,
+      label: <Link to="/weeks" style={{ textDecoration: 'none', marginLeft: '1px' }}>Weeks</Link>,
+    },
+    {
+      key: 'reviews',
+      icon: <FileTextOutlined />,
+      label: <span style={{ marginLeft: '1px' }}>Reviews</span>,
+      disabled: true,
+    },
+  ];
+
+  return (
+    <Header style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      background: '#fff', 
+      borderBottom: '1px solid #f0f0f0',
+      padding: '0 24px'
+    }}>
+      <div style={{ 
+        color: '#1890ff', 
+        fontSize: '24px', 
+        fontWeight: 'bold', 
+        marginRight: '48px' 
+      }}>
+        EagleKidz
+      </div>
+      <Menu
+        mode="horizontal"
+        selectedKeys={[getSelectedKey()]}
+        items={menuItems}
+        style={{ 
+          flex: 1, 
+          minWidth: 0, 
+          border: 'none',
+          background: 'transparent'
+        }}
+      />
+    </Header>
+  );
 }
 
 function App() {
-  const [apiStatus, setApiStatus] = useState<ApiStatus>({
-    health: null,
-    welcome: null,
-    status: null,
-    loading: false,
-    error: null
-  });
-
-  const fetchApiData = async () => {
-    setApiStatus(prev => ({ ...prev, loading: true, error: null }));
-    
-    try {
-      const [healthResponse, welcomeResponse, statusResponse] = await Promise.all([
-        apiService.getHealth(),
-        apiService.getWelcome(),
-        apiService.getApiStatus()
-      ]);
-
-      setApiStatus({
-        health: healthResponse,
-        welcome: welcomeResponse,
-        status: statusResponse,
-        loading: false,
-        error: null
-      });
-    } catch (error) {
-      setApiStatus(prev => ({
-        ...prev,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
-      }));
-    }
+  const theme = {
+    token: {
+      colorPrimary: '#fadb14', // Yellow theme
+      colorLink: '#fadb14',
+      borderRadius: 8,
+    },
   };
 
-  useEffect(() => {
-    fetchApiData();
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>EagleKidz Frontend</h1>
-        <p>React application connected to Go backend API</p>
-        
-        <div style={{ marginTop: '2rem', textAlign: 'left', maxWidth: '600px' }}>
-          <button 
-            onClick={fetchApiData} 
-            disabled={apiStatus.loading}
-            style={{
-              padding: '10px 20px',
-              fontSize: '16px',
-              backgroundColor: '#61dafb',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: apiStatus.loading ? 'not-allowed' : 'pointer',
-              marginBottom: '20px'
-            }}
-          >
-            {apiStatus.loading ? 'Loading...' : 'Refresh API Data'}
-          </button>
-
-          {apiStatus.error && (
-            <div style={{ 
-              color: '#ff6b6b', 
-              backgroundColor: '#ffe0e0', 
-              padding: '10px', 
-              borderRadius: '5px',
-              marginBottom: '20px'
-            }}>
-              <strong>Error:</strong> {apiStatus.error}
-              <br />
-              <small>Make sure the Go backend server is running on port 8080</small>
-            </div>
-          )}
-
-          {apiStatus.health && (
-            <div style={{ marginBottom: '20px' }}>
-              <h3>Health Check (/health)</h3>
-              <pre style={{ 
-                backgroundColor: '#f4f4f4', 
-                padding: '10px', 
-                borderRadius: '5px',
-                fontSize: '14px',
-                color: '#333'
-              }}>
-                {JSON.stringify(apiStatus.health, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {apiStatus.welcome && (
-            <div style={{ marginBottom: '20px' }}>
-              <h3>Welcome API (/api)</h3>
-              <pre style={{ 
-                backgroundColor: '#f4f4f4', 
-                padding: '10px', 
-                borderRadius: '5px',
-                fontSize: '14px',
-                color: '#333'
-              }}>
-                {JSON.stringify(apiStatus.welcome, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {apiStatus.status && (
-            <div style={{ marginBottom: '20px' }}>
-              <h3>API Status (/api/v1/status)</h3>
-              <pre style={{ 
-                backgroundColor: '#f4f4f4', 
-                padding: '10px', 
-                borderRadius: '5px',
-                fontSize: '14px',
-                color: '#333'
-              }}>
-                {JSON.stringify(apiStatus.status, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
-      </header>
-    </div>
+    <ConfigProvider theme={theme}>
+      <Router>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Navigation />
+          
+          <Content style={{ background: '#f5f5f5' }}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/weeks" element={<WeeksPage />} />
+              <Route path="/weeks/:weekId/add-review" element={<AddReviewPage />} />
+              <Route path="/weeks/:weekId/reviews" element={<ViewReviewsPage />} />
+              <Route path="/weeks/:weekId/reviews/:reviewId/edit" element={<EditReviewPage />} />
+            </Routes>
+          </Content>
+        </Layout>
+      </Router>
+    </ConfigProvider>
   );
 }
 
