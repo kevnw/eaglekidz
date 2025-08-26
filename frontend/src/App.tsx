@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu, Card, Button, Typography } from 'antd';
-import { CalendarOutlined, FileTextOutlined, BarChartOutlined } from '@ant-design/icons';
+import { CalendarOutlined, FileTextOutlined, BarChartOutlined, TeamOutlined } from '@ant-design/icons';
 import { WeeksPage, AddReviewPage, ViewReviewsPage, EditReviewPage } from './components';
 import { apiService, ApiResponse, HealthData } from './services/api';
 import 'antd/dist/reset.css';
@@ -50,6 +50,22 @@ function HomePage() {
             <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Reviews</Title>
             <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
               Track weekly reviews and improvements
+            </Paragraph>
+            <Button disabled size="large">
+              Coming Soon
+            </Button>
+          </div>
+        </Card>
+        
+        <Card
+          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
+          bodyStyle={{ padding: '32px' }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <TeamOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
+            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Scheduling</Title>
+            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
+              Schedule ministers for weekly church activities
             </Paragraph>
             <Button disabled size="large">
               Coming Soon
