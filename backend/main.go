@@ -81,8 +81,14 @@ func main() {
 		log.Println("Warning: .env file not found, using system environment variables")
 	}
 
+	// Get MongoDB URI from environment variable
+	mongoURI := os.Getenv("MONGODB_URI")
+	if mongoURI == "" {
+		mongoURI = "mongodb://localhost:27017" // fallback for local development
+	}
+
 	// Connect to MongoDB
-	if err := database.Connect(""); err != nil {
+	if err := database.Connect(mongoURI); err != nil {
 		log.Fatal("Failed to connect to MongoDB:", err)
 	}
 	defer database.Disconnect()
@@ -146,7 +152,12 @@ func main() {
 	api.HandleFunc("/ai/summarize", aiHandler.GenerateSummary).Methods("POST", "OPTIONS")
 
 	// Start server
-	port := ":8080"
+	// Get port from environment variable
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback for local development
+	}
+	port = ":" + port
 	fmt.Printf("Server starting on port %s\n", port)
 	fmt.Println("Available endpoints:")
 	fmt.Println("  GET /health - Health check")
