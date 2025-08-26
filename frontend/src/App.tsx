@@ -182,12 +182,19 @@ function Navigation() {
       padding: '0 24px'
     }}>
       <div style={{ 
-        color: '#1890ff', 
-        fontSize: '24px', 
-        fontWeight: 'bold', 
+        display: 'flex',
+        alignItems: 'center',
         marginRight: '48px' 
       }}>
-        EagleKidz
+        <img 
+          src="/eagle-kidz.jpg" 
+          alt="EagleKidz Logo" 
+          style={{ 
+            height: '40px', 
+            width: 'auto',
+            marginRight: '8px'
+          }} 
+        />
       </div>
       <Menu
         mode="horizontal"
