@@ -55,9 +55,11 @@ export interface UpdateReviewRequest {
 
 export interface People {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   type: 'minister' | 'children';
-  age?: number;
+  age_group?: string[];
+  roles?: string[];
   phone?: string;
   email?: string;
   notes?: string;
@@ -67,18 +69,22 @@ export interface People {
 }
 
 export interface CreatePeopleRequest {
-  name: string;
+  first_name: string;
+  last_name: string;
   type: 'minister' | 'children';
-  age?: number;
-  phone?: string;
+  age_group: string[];
+  roles: string[];
+  phone: string;
   email?: string;
   notes?: string;
 }
 
 export interface UpdatePeopleRequest {
-  name?: string;
+  first_name?: string;
+  last_name?: string;
   type?: 'minister' | 'children';
-  age?: number;
+  age_group?: string[];
+  roles?: string[];
   phone?: string;
   email?: string;
   notes?: string;

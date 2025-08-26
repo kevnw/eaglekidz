@@ -437,18 +437,42 @@ const ReviewsPage: React.FC = () => {
                   <Text strong style={{ color: '#52c41a', display: 'block', marginBottom: '4px' }}>
                     What Went Well:
                   </Text>
-                  <Paragraph style={{ margin: 0, fontSize: '13px' }}>
-                    {truncateText(review.what_went_well)}
-                  </Paragraph>
+                  <div 
+                    style={{ 
+                      margin: 0, 
+                      fontSize: '13px',
+                      maxHeight: '40px',
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      textOverflow: 'ellipsis',
+                      lineHeight: '1.4'
+                    }}
+                  >
+                    {review.what_went_well}
+                  </div>
                 </div>
                 
                 <div style={{ marginBottom: '12px' }}>
                   <Text strong style={{ color: '#faad14', display: 'block', marginBottom: '4px' }}>
                     Can Improve:
                   </Text>
-                  <Paragraph style={{ margin: 0, fontSize: '13px' }}>
-                    {truncateText(review.can_improve)}
-                  </Paragraph>
+                  <div 
+                    style={{ 
+                      margin: 0, 
+                      fontSize: '13px',
+                      maxHeight: '40px',
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      textOverflow: 'ellipsis',
+                      lineHeight: '1.4'
+                    }}
+                  >
+                    {review.can_improve}
+                  </div>
                 </div>
                 
                 {review.summary && review.summary.trim() && review.summary !== '<p></p>' && (
@@ -466,7 +490,8 @@ const ReviewsPage: React.FC = () => {
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
                         WebkitBoxOrient: 'vertical',
-                        textOverflow: 'ellipsis'
+                        textOverflow: 'ellipsis',
+                        lineHeight: '1.4'
                       }}
                       dangerouslySetInnerHTML={{ __html: review.summary }}
                     />

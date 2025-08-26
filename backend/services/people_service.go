@@ -26,9 +26,11 @@ func NewPeopleService(db *mongo.Database) *PeopleService {
 func (s *PeopleService) CreatePeople(req models.CreatePeopleRequest) (*models.People, error) {
 	people := models.People{
 		ID:        primitive.NewObjectID(),
-		Name:      req.Name,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
 		Type:      req.Type,
-		Age:       req.Age,
+		AgeGroup:  req.AgeGroup,
+		Roles:     req.Roles,
 		Phone:     req.Phone,
 		Email:     req.Email,
 		Notes:     req.Notes,
@@ -119,14 +121,20 @@ func (s *PeopleService) UpdatePeople(id string, req models.UpdatePeopleRequest) 
 		},
 	}
 
-	if req.Name != nil {
-		update["$set"].(bson.M)["name"] = *req.Name
+	if req.FirstName != nil {
+		update["$set"].(bson.M)["first_name"] = *req.FirstName
+	}
+	if req.LastName != nil {
+		update["$set"].(bson.M)["last_name"] = *req.LastName
 	}
 	if req.Type != nil {
 		update["$set"].(bson.M)["type"] = *req.Type
 	}
-	if req.Age != nil {
-		update["$set"].(bson.M)["age"] = *req.Age
+	if req.AgeGroup != nil {
+		update["$set"].(bson.M)["age_group"] = req.AgeGroup
+	}
+	if req.Roles != nil {
+		update["$set"].(bson.M)["roles"] = req.Roles
 	}
 	if req.Phone != nil {
 		update["$set"].(bson.M)["phone"] = *req.Phone

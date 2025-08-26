@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Table, Space, Modal, Form, Input, Select, InputNumber, message, Popconfirm, Collapse } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, RestOutlined } from '@ant-design/icons';
+import { Card, Button, Table, Space, Modal, Form, Input, Select, InputNumber, message, Popconfirm, Collapse, Row, Col } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, RestOutlined, SearchOutlined } from '@ant-design/icons';
 import { apiService, People, CreatePeopleRequest, UpdatePeopleRequest } from '../../services/api';
 
 const { Panel } = Collapse;
@@ -11,9 +11,14 @@ interface MinistersPageProps {}
 const MinistersPage: React.FC<MinistersPageProps> = () => {
   const [ministers, setMinisters] = useState<People[]>([]);
   const [deletedMinisters, setDeletedMinisters] = useState<People[]>([]);
+  const [filteredMinisters, setFilteredMinisters] = useState<People[]>([]);
+  const [filteredDeletedMinisters, setFilteredDeletedMinisters] = useState<People[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingMinister, setEditingMinister] = useState<People | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([]);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -21,12 +26,52 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
     fetchDeletedMinisters();
   }, []);
 
+  // Filter ministers based on search and filter criteria
+  useEffect(() => {
+    let filtered = ministers.filter(minister => {
+      const fullName = `${minister.first_name} ${minister.last_name}`.toLowerCase();
+      const matchesSearch = searchText === '' || 
+        fullName.includes(searchText.toLowerCase()) ||
+        minister.phone?.includes(searchText);
+      
+      const matchesAgeGroup = selectedAgeGroups.length === 0 || 
+        (minister.age_group && minister.age_group.some(group => selectedAgeGroups.includes(group)));
+      
+      const matchesRoles = selectedRoles.length === 0 || 
+        (minister.roles && minister.roles.some(role => selectedRoles.includes(role)));
+      
+      return matchesSearch && matchesAgeGroup && matchesRoles;
+    });
+    setFilteredMinisters(filtered);
+  }, [ministers, searchText, selectedAgeGroups, selectedRoles]);
+
+  // Filter deleted ministers
+  useEffect(() => {
+    let filtered = deletedMinisters.filter(minister => {
+      const fullName = `${minister.first_name} ${minister.last_name}`.toLowerCase();
+      const matchesSearch = searchText === '' || 
+        fullName.includes(searchText.toLowerCase()) ||
+        minister.phone?.includes(searchText);
+      
+      const matchesAgeGroup = selectedAgeGroups.length === 0 || 
+        (minister.age_group && minister.age_group.some(group => selectedAgeGroups.includes(group)));
+      
+      const matchesRoles = selectedRoles.length === 0 || 
+        (minister.roles && minister.roles.some(role => selectedRoles.includes(role)));
+      
+      return matchesSearch && matchesAgeGroup && matchesRoles;
+    });
+    setFilteredDeletedMinisters(filtered);
+  }, [deletedMinisters, searchText, selectedAgeGroups, selectedRoles]);
+
   const fetchMinisters = async () => {
     setLoading(true);
     try {
       const response = await apiService.getPeopleByType('minister');
       if (response.data) {
-        setMinisters(response.data.filter(person => !person.deleted));
+        const activeMinisters = response.data.filter(person => !person.deleted);
+        setMinisters(activeMinisters);
+        setFilteredMinisters(activeMinisters);
       }
     } catch (error) {
       message.error('Failed to fetch ministers');
@@ -39,7 +84,9 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
     try {
       const response = await apiService.getDeletedPeople();
       if (response.data) {
-        setDeletedMinisters(response.data.filter(person => person.type === 'minister'));
+        const deletedMinistersList = response.data.filter(person => person.type === 'minister');
+        setDeletedMinisters(deletedMinistersList);
+        setFilteredDeletedMinisters(deletedMinistersList);
       }
     } catch (error) {
       message.error('Failed to fetch deleted ministers');
@@ -122,14 +169,16 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
+      sorter: (a: People, b: People) => a.first_name.localeCompare(b.first_name),
+      sortDirections: ['ascend' as const, 'descend' as const],
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
     },
     {
       title: 'Phone',
@@ -137,9 +186,57 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
       key: 'phone',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'Age Group',
+      dataIndex: 'age_group',
+      key: 'age_group',
+      render: (ageGroups: string[]) => (
+        <div>
+          {ageGroups && ageGroups.map((group, index) => (
+            <span key={index} style={{ 
+              display: 'inline-block', 
+              background: '#f0f0f0', 
+              padding: '2px 8px', 
+              margin: '2px', 
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}>
+              {group}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Roles',
+      dataIndex: 'roles',
+      key: 'roles',
+      render: (roles: string[]) => {
+        const roleColors: { [key: string]: string } = {
+          'SIC': '#ff4d4f',
+          'PAW': '#52c41a',
+          'Operator': '#1890ff',
+          'Host': '#722ed1',
+          'Usher': '#fa8c16',
+          'Activity/Games': '#eb2f96'
+        };
+        return (
+          <div>
+            {roles && roles.map((role, index) => (
+              <span key={index} style={{ 
+                display: 'inline-block', 
+                background: roleColors[role] || '#f0f0f0',
+                color: 'white',
+                padding: '2px 8px', 
+                margin: '2px', 
+                borderRadius: '4px',
+                fontSize: '12px'
+              }}>
+                {role}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: 'Notes',
@@ -176,19 +273,74 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
 
   const deletedColumns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
+      sorter: (a: People, b: People) => a.first_name.localeCompare(b.first_name),
+      sortDirections: ['ascend' as const, 'descend' as const],
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
+    },
+    {
+      title: 'Age Group',
+      dataIndex: 'age_group',
+      key: 'age_group',
+      render: (ageGroups: string[]) => (
+        <div>
+          {ageGroups && ageGroups.map((group, index) => (
+            <span key={index} style={{ 
+              display: 'inline-block', 
+              background: '#f0f0f0', 
+              padding: '2px 8px', 
+              margin: '2px', 
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}>
+              {group}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Roles',
+      dataIndex: 'roles',
+      key: 'roles',
+      render: (roles: string[]) => {
+        const roleColors: { [key: string]: string } = {
+          'SIC': '#ff4d4f',
+          'PAW': '#52c41a',
+          'Operator': '#1890ff',
+          'Host': '#722ed1',
+          'Usher': '#fa8c16',
+          'Activity/Games': '#eb2f96'
+        };
+        return (
+          <div>
+            {roles && roles.map((role, index) => (
+              <span key={index} style={{ 
+                display: 'inline-block', 
+                background: roleColors[role] || '#f0f0f0',
+                color: 'white',
+                padding: '2px 8px', 
+                margin: '2px', 
+                borderRadius: '4px',
+                fontSize: '12px'
+              }}>
+                {role}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: 'Email',
@@ -233,9 +385,79 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
           </Button>
         }
       >
+        {/* Search and Filter Controls */}
+        <div style={{ marginBottom: '16px' }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={6}>
+              <Input
+                placeholder="Search by name, email, or phone"
+                prefix={<SearchOutlined />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+              />
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Select
+                mode="multiple"
+                placeholder="Filter by age group"
+                value={selectedAgeGroups}
+                onChange={setSelectedAgeGroups}
+                style={{ width: '100%' }}
+                allowClear
+              >
+                <Option value="Little Eagle">Little Eagle</Option>
+                <Option value="All Star">All Star</Option>
+                <Option value="Super Trooper">Super Trooper</Option>
+                <Option value="Voltage">Voltage</Option>
+              </Select>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Select
+                mode="multiple"
+                placeholder="Filter by roles"
+                value={selectedRoles}
+                onChange={setSelectedRoles}
+                style={{ width: '100%' }}
+                allowClear
+              >
+                <Option value="SIC">SIC</Option>
+                <Option value="PAW">PAW</Option>
+                <Option value="Operator">Operator</Option>
+                <Option value="Host">Host</Option>
+                <Option value="Usher">Usher</Option>
+                <Option value="Activity/Games">Activity/Games</Option>
+              </Select>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Space>
+                <Button 
+                  onClick={() => {
+                    setSearchText('');
+                    setSelectedAgeGroups([]);
+                    setSelectedRoles([]);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+          
+          {/* Results Count */}
+          <div style={{ marginTop: '8px', color: '#666', fontSize: '14px' }}>
+            Showing {filteredMinisters.length} of {ministers.length} ministers
+            {(searchText || selectedAgeGroups.length > 0 || selectedRoles.length > 0) && (
+              <span style={{ marginLeft: '8px', fontStyle: 'italic' }}>
+                (filtered)
+              </span>
+            )}
+          </div>
+        </div>
+        
         <Table
           columns={columns}
-          dataSource={ministers}
+          dataSource={filteredMinisters}
           rowKey="id"
           loading={loading}
           pagination={{ pageSize: 10 }}
@@ -245,10 +467,10 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
       {deletedMinisters.length > 0 && (
         <Card style={{ marginTop: '24px' }}>
           <Collapse>
-            <Panel header={`Deleted Ministers (${deletedMinisters.length})`} key="deleted">
+            <Panel header={`Deleted Ministers (${filteredDeletedMinisters.length} of ${deletedMinisters.length})`} key="deleted">
               <Table
                 columns={deletedColumns}
-                dataSource={deletedMinisters}
+                dataSource={filteredDeletedMinisters}
                 rowKey="id"
                 pagination={{ pageSize: 5 }}
               />
@@ -272,38 +494,63 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: 'Please enter name' }]}
+            name="first_name"
+            label="First Name"
+            rules={[{ required: true, message: 'Please enter first name' }]}
           >
-            <Input placeholder="Enter minister name" />
+            <Input placeholder="Enter first name" />
           </Form.Item>
 
           <Form.Item
-            name="age"
-            label="Age"
+            name="last_name"
+            label="Last Name"
+            rules={[{ required: true, message: 'Please enter last name' }]}
           >
-            <InputNumber
-              placeholder="Enter age"
-              min={1}
-              max={120}
-              style={{ width: '100%' }}
-            />
+            <Input placeholder="Enter last name" />
           </Form.Item>
 
           <Form.Item
             name="phone"
             label="Phone"
+            rules={[{ required: true, message: 'Please enter phone number' }]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>
 
           <Form.Item
-            name="email"
-            label="Email"
-            rules={[{ type: 'email', message: 'Please enter a valid email' }]}
+            name="age_group"
+            label="Age Group"
+            rules={[{ required: true, message: 'Please select at least one age group' }]}
           >
-            <Input placeholder="Enter email address" />
+            <Select
+              mode="multiple"
+              placeholder="Select age groups"
+              style={{ width: '100%' }}
+            >
+              <Option value="Little Eagle">Little Eagle</Option>
+              <Option value="All Star">All Star</Option>
+              <Option value="Super Trooper">Super Trooper</Option>
+              <Option value="Voltage">Voltage</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="roles"
+            label="Roles"
+            rules={[{ required: true, message: 'Please select at least one role' }]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select roles"
+              style={{ width: '100%' }}
+            >
+              <Option value="SIC">SIC</Option>
+              <Option value="PAW">PAW</Option>
+              <Option value="Operator">Operator</Option>
+              <Option value="Host">Host</Option>
+              <Option value="Usher">Usher</Option>
+              <Option value="Activity/Games">Activity/Games</Option>
+            </Select>
           </Form.Item>
 
           <Form.Item

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu, Card, Button, Typography } from 'antd';
-import { CalendarOutlined, FileTextOutlined, BarChartOutlined, TeamOutlined } from '@ant-design/icons';
+import { CalendarOutlined, FileTextOutlined, BarChartOutlined, TeamOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { WeeksPage, AddReviewPage, ViewReviewsPage, EditReviewPage } from './components';
 import { MinistersPage, ChildrenPage } from './components/people';
 import { ReviewsPage } from './components/pages';
@@ -92,6 +92,22 @@ function HomePage() {
           bodyStyle={{ padding: '32px' }}
         >
           <div style={{ textAlign: 'center' }}>
+            <CheckCircleOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
+            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Attendance</Title>
+            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
+              Track attendance for church activities
+            </Paragraph>
+            <Button disabled size="large">
+              Coming Soon
+            </Button>
+          </div>
+        </Card>
+        
+        <Card
+          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
+          bodyStyle={{ padding: '32px' }}
+        >
+          <div style={{ textAlign: 'center' }}>
             <BarChartOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
             <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Reports</Title>
             <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
@@ -115,6 +131,7 @@ function Navigation() {
     if (location.pathname.startsWith('/weeks')) return 'weeks';
     if (location.pathname.startsWith('/people')) return 'people';
     if (location.pathname.startsWith('/reviews')) return 'reviews';
+    if (location.pathname.startsWith('/attendance')) return 'attendance';
     return 'home';
   };
 
@@ -148,6 +165,11 @@ function Navigation() {
       key: 'reviews',
       icon: <FileTextOutlined />,
       label: <Link to="/reviews" style={{ textDecoration: 'none', marginLeft: '1px' }}>Reviews</Link>,
+    },
+    {
+      key: 'attendance',
+      icon: <CheckCircleOutlined />,
+      label: <span style={{ textDecoration: 'none', marginLeft: '1px', color: '#999', cursor: 'not-allowed' }}>Attendance</span>,
     },
   ];
 

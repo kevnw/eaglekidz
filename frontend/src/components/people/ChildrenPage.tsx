@@ -122,19 +122,72 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
+    },
+    {
+      title: 'Age Group',
+      dataIndex: 'age_group',
+      key: 'age_group',
+      render: (ageGroups: string[]) => (
+        <div>
+          {ageGroups && ageGroups.map((group, index) => (
+            <span key={index} style={{ 
+              display: 'inline-block', 
+              background: '#f0f0f0', 
+              padding: '2px 8px', 
+              margin: '2px', 
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}>
+              {group}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: 'Roles',
+      dataIndex: 'roles',
+      key: 'roles',
+      render: (roles: string[]) => {
+        const roleColors: { [key: string]: string } = {
+          'SIC': '#ff4d4f',
+          'PAW': '#52c41a',
+          'Operator': '#1890ff',
+          'Host': '#722ed1',
+          'Usher': '#fa8c16',
+          'Activity/Games': '#eb2f96'
+        };
+        return (
+          <div>
+            {roles && roles.map((role, index) => (
+              <span key={index} style={{ 
+                display: 'inline-block', 
+                background: roleColors[role] || '#f0f0f0',
+                color: 'white',
+                padding: '2px 8px', 
+                margin: '2px', 
+                borderRadius: '4px',
+                fontSize: '12px'
+              }}>
+                {role}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: 'Email',
@@ -176,19 +229,40 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
 
   const deletedColumns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'First Name',
+      dataIndex: 'first_name',
+      key: 'first_name',
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Last Name',
+      dataIndex: 'last_name',
+      key: 'last_name',
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
+    },
+    {
+      title: 'Age Group',
+      dataIndex: 'age_group',
+      key: 'age_group',
+      render: (ageGroups: string[]) => (
+        <div>
+          {ageGroups && ageGroups.map((group, index) => (
+            <span key={index} style={{ 
+              display: 'inline-block', 
+              background: '#f0f0f0', 
+              padding: '2px 8px', 
+              margin: '2px', 
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}>
+              {group}
+            </span>
+          ))}
+        </div>
+      ),
     },
     {
       title: 'Email',
@@ -272,28 +346,25 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
           onFinish={handleSubmit}
         >
           <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: 'Please enter name' }]}
+            name="first_name"
+            label="First Name"
+            rules={[{ required: true, message: 'Please enter first name' }]}
           >
-            <Input placeholder="Enter child name" />
+            <Input placeholder="Enter first name" />
           </Form.Item>
 
           <Form.Item
-            name="age"
-            label="Age"
+            name="last_name"
+            label="Last Name"
+            rules={[{ required: true, message: 'Please enter last name' }]}
           >
-            <InputNumber
-              placeholder="Enter age"
-              min={1}
-              max={18}
-              style={{ width: '100%' }}
-            />
+            <Input placeholder="Enter last name" />
           </Form.Item>
 
           <Form.Item
             name="phone"
             label="Phone"
+            rules={[{ required: true, message: 'Please enter phone number' }]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>
@@ -304,6 +375,40 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
             rules={[{ type: 'email', message: 'Please enter a valid email' }]}
           >
             <Input placeholder="Enter email address" />
+          </Form.Item>
+
+          <Form.Item
+            name="age_group"
+            label="Age Group"
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select age groups"
+              style={{ width: '100%' }}
+            >
+              <Option value="Little Eagle">Little Eagle</Option>
+              <Option value="All Star">All Star</Option>
+              <Option value="Super Trooper">Super Trooper</Option>
+              <Option value="Voltage">Voltage</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="roles"
+            label="Roles"
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select roles"
+              style={{ width: '100%' }}
+            >
+              <Option value="SIC">SIC</Option>
+              <Option value="PAW">PAW</Option>
+              <Option value="Operator">Operator</Option>
+              <Option value="Host">Host</Option>
+              <Option value="Usher">Usher</Option>
+              <Option value="Activity/Games">Activity/Games</Option>
+            </Select>
           </Form.Item>
 
           <Form.Item
