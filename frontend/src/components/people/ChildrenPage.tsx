@@ -364,7 +364,6 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
           <Form.Item
             name="phone"
             label="Phone"
-            rules={[{ required: true, message: 'Please enter phone number' }]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>
@@ -380,6 +379,7 @@ const ChildrenPage: React.FC<ChildrenPageProps> = () => {
           <Form.Item
             name="age_group"
             label="Age Group"
+            rules={[{ required: true, message: 'Please select at least one age group' }]}
           >
             <Select
               mode="multiple"

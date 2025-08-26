@@ -41,10 +41,21 @@ func (s *WeekService) CreateWeek(ctx context.Context, req models.CreateWeekReque
 		return nil, fmt.Errorf("failed to check for duplicate week: %v", err)
 	}
 
+	// Initialize default services if not provided
+	services := req.Services
+	if len(services) == 0 {
+		services = []models.Service{
+			{Name: "Voltage", Time: "11AM", SIC: ""},
+			{Name: "Little Eagle, All Star, Super Trooper", Time: "11AM", SIC: ""},
+			{Name: "Little Eagle, All Star, Super Trooper", Time: "1PM", SIC: ""},
+		}
+	}
+
 	week := &models.Week{
 		ID:        primitive.NewObjectID(),
 		StartTime: req.StartTime,
 		EndTime:   req.EndTime,
+		Services:  services,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -100,6 +111,29 @@ func (s *WeekService) GetAllWeeks(ctx context.Context) ([]*models.Week, error) {
 	}
 
 	return weeks, nil
+}
+
+// UpdateWeekServices updates the services for a specific week
+func (s *WeekService) UpdateWeekServices(ctx context.Context, id string, req models.UpdateWeekServicesRequest) (*models.Week, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid week ID: %v", err)
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"services":   req.Services,
+			"updated_at": time.Now(),
+		},
+	}
+
+	_, err = s.collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update week services: %v", err)
+	}
+
+	// Return the updated week
+	return s.GetWeekByID(ctx, id)
 }
 
 // DeleteWeek deletes a week by its ID

@@ -117,6 +117,7 @@ func main() {
 	api.HandleFunc("/weeks", weekHandler.CreateWeek).Methods("POST", "OPTIONS")
 	api.HandleFunc("/weeks", weekHandler.GetAllWeeks).Methods("GET", "OPTIONS")
 	api.HandleFunc("/weeks/{id}", weekHandler.GetWeek).Methods("GET", "OPTIONS")
+	api.HandleFunc("/weeks/{id}/services", weekHandler.UpdateWeekServices).Methods("PUT", "OPTIONS")
 	api.HandleFunc("/weeks/{id}", weekHandler.DeleteWeek).Methods("DELETE", "OPTIONS")
 
 	// Review routes

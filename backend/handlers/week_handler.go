@@ -105,6 +105,40 @@ func (h *WeekHandler) GetAllWeeks(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// UpdateWeekServices handles PUT /api/v1/weeks/{id}/services
+func (h *WeekHandler) UpdateWeekServices(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var req models.UpdateWeekServicesRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate that services are provided
+	if len(req.Services) == 0 {
+		http.Error(w, "Services are required", http.StatusBadRequest)
+		return
+	}
+
+	week, err := h.weekService.UpdateWeekServices(r.Context(), id, req)
+	if err != nil {
+		if err.Error() == "week not found" {
+			http.Error(w, "Week not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"data":    week,
+	})
+}
+
 // DeleteWeek handles DELETE /api/v1/weeks/{id}
 func (h *WeekHandler) DeleteWeek(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

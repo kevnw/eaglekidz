@@ -96,27 +96,54 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
   const handleCreate = () => {
     setEditingMinister(null);
     form.resetFields();
-    form.setFieldsValue({ type: 'minister' });
+    form.setFieldsValue({ 
+      type: 'minister',
+      phone: { country_code: '+65', number: '' }
+    });
     setModalVisible(true);
   };
 
   const handleEdit = (minister: People) => {
     setEditingMinister(minister);
-    form.setFieldsValue(minister);
+    // Parse existing phone number if it exists
+    let phoneData = { country_code: '+65', number: '' };
+    if (minister.phone) {
+      // Try to extract country code from existing phone
+      const phoneMatch = minister.phone.match(/^(\+\d{1,4})\s*(.+)$/);
+      if (phoneMatch) {
+        phoneData = {
+          country_code: phoneMatch[1],
+          number: phoneMatch[2]
+        };
+      } else {
+        phoneData.number = minister.phone;
+      }
+    }
+    
+    form.setFieldsValue({
+      ...minister,
+      phone: phoneData
+    });
     setModalVisible(true);
   };
 
   const handleSubmit = async (values: any) => {
     try {
+      // Combine country code and phone number
+      const formattedValues = {
+        ...values,
+        phone: values.phone ? `${values.phone.country_code} ${values.phone.number}` : ''
+      };
+      
       if (editingMinister) {
-        const updateData: UpdatePeopleRequest = { ...values };
+        const updateData: UpdatePeopleRequest = { ...formattedValues };
         const response = await apiService.updatePeople(editingMinister.id, updateData);
         if (response.data) {
           setMinisters(ministers.map(m => m.id === editingMinister.id ? response.data! : m));
           message.success('Minister updated successfully');
         }
       } else {
-        const createData: CreatePeopleRequest = { ...values, type: 'minister' };
+        const createData: CreatePeopleRequest = { ...formattedValues, type: 'minister' };
         const response = await apiService.createPeople(createData);
         if (response.data) {
           setMinisters([...ministers, response.data]);
@@ -514,7 +541,44 @@ const MinistersPage: React.FC<MinistersPageProps> = () => {
             label="Phone"
             rules={[{ required: true, message: 'Please enter phone number' }]}
           >
-            <Input placeholder="Enter phone number" />
+            <Input.Group compact>
+              <Form.Item
+                name={['phone', 'country_code']}
+                noStyle
+                initialValue="+65"
+              >
+                <Select
+                  style={{ width: '35%' }}
+                  placeholder="Country"
+                  showSearch
+                  filterOption={(input, option) => {
+                    const label = option?.children || '';
+                    return String(label).toLowerCase().includes(input.toLowerCase());
+                  }}
+                >
+                  <Option value="+65">Singapore (+65)</Option>
+                  <Option value="+62">Indonesia (+62)</Option>
+                  <Option value="+60">Malaysia (+60)</Option>
+                  <Option value="+66">Thailand (+66)</Option>
+                  <Option value="+84">Vietnam (+84)</Option>
+                  <Option value="+63">Philippines (+63)</Option>
+                  <Option value="+1">United States (+1)</Option>
+                  <Option value="+44">United Kingdom (+44)</Option>
+                  <Option value="+61">Australia (+61)</Option>
+                  <Option value="+81">Japan (+81)</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name={['phone', 'number']}
+                noStyle
+                rules={[{ required: true, message: 'Please enter phone number' }]}
+              >
+                <Input
+                  style={{ width: '65%' }}
+                  placeholder="Enter phone number"
+                />
+              </Form.Item>
+            </Input.Group>
           </Form.Item>
 
           <Form.Item

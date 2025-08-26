@@ -13,10 +13,17 @@ export interface HealthData {
   version: string;
 }
 
+export interface Service {
+  name: string;
+  time: string;
+  sic: string; // Service in Charge (Minister ID)
+}
+
 export interface Week {
   id: string;
   start_time: string;
   end_time: string;
+  services: Service[];
   created_at: string;
   updated_at: string;
 }
@@ -24,6 +31,11 @@ export interface Week {
 export interface CreateWeekRequest {
   start_time: string;
   end_time: string;
+  services?: Service[];
+}
+
+export interface UpdateWeekServicesRequest {
+  services: Service[];
 }
 
 export interface Review {
@@ -176,6 +188,13 @@ class ApiService {
 
   async getWeekById(id: string): Promise<ApiResponse<Week>> {
     return this.fetchApi<Week>(`/api/v1/weeks/${id}`);
+  }
+
+  async updateWeekServices(id: string, servicesData: UpdateWeekServicesRequest): Promise<ApiResponse<Week>> {
+    return this.fetchApi<Week>(`/api/v1/weeks/${id}/services`, {
+      method: 'PUT',
+      body: JSON.stringify(servicesData),
+    });
   }
 
   async deleteWeek(id: string): Promise<ApiResponse> {

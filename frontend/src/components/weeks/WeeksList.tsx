@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Typography, Alert, Spin, Empty, Row, Col, Space, Tag, Popconfirm, Divider, Cascader } from 'antd';
-import { CalendarOutlined, EyeOutlined, PlusOutlined, DeleteOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { apiService, Week } from '../../services/api';
+import { Card, Button, Typography, Alert, Spin, Empty, Row, Col, Space, Tag, Divider, Cascader, Modal, Form, Select, message } from 'antd';
+import { CalendarOutlined, EyeOutlined, PlusOutlined, ClockCircleOutlined, TeamOutlined } from '@ant-design/icons';
+import { apiService, Week, Service, People } from '../../services/api';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -21,6 +21,14 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Service management state
+  const [serviceModalVisible, setServiceModalVisible] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState<Week | null>(null);
+  const [ministers, setMinisters] = useState<People[]>([]);
+  const [serviceForm] = Form.useForm();
+  const [serviceLoading, setServiceLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   const fetchWeeks = async () => {
@@ -125,28 +133,7 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
 
 
 
-  const handleDeleteWeek = async (weekId: string) => {
-    try {
-      await apiService.deleteWeek(weekId);
-      
-      // Remove the deleted week from current state immediately
-      const updatedWeeks = weeks.filter(week => week.id !== weekId);
-      setWeeks(updatedWeeks);
-      
-      // If no weeks left, reset filters
-      if (updatedWeeks.length === 0) {
-        setSelectedYear('');
-        setSelectedMonth('');
-        setCascaderOptions([]);
-        setFilteredWeeks([]);
-      } else {
-        // Refresh from server to ensure consistency
-        await fetchWeeks();
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete week');
-    }
-  };
+
 
   const handleViewReviews = (week: Week) => {
     const weekTitle = getWeekTitle(week);
@@ -160,6 +147,85 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
     navigate(`/weeks/${week.id}/add-review`, {
       state: { weekTitle }
     });
+  };
+
+  const handleManageServices = (week: Week) => {
+    setSelectedWeek(week);
+    setServiceModalVisible(true);
+    
+    // Initialize form with current services or default services
+    const defaultServices = [
+      { name: 'Voltage', time: '11AM', sic: '' },
+      { name: 'Little Eagle, All Star, Super Trooper', time: '11AM', sic: '' },
+      { name: 'Little Eagle, All Star, Super Trooper', time: '1PM', sic: '' }
+    ];
+    
+    const services = week.services && week.services.length > 0 ? week.services : defaultServices;
+    serviceForm.setFieldsValue({ services });
+  };
+
+  const fetchMinisters = async () => {
+    try {
+      const response = await apiService.getPeopleByType('minister');
+      if (response.data) {
+        setMinisters(response.data.filter(minister => !minister.deleted));
+      }
+    } catch (error) {
+      console.error('Failed to fetch ministers:', error);
+    }
+  };
+
+  const handleServiceSubmit = async () => {
+    if (!selectedWeek) return;
+    
+    try {
+      setServiceLoading(true);
+      const values = await serviceForm.validateFields();
+      
+      await apiService.updateWeekServices(selectedWeek.id, {
+        services: values.services
+      });
+      
+      message.success('Services updated successfully!');
+      setServiceModalVisible(false);
+      fetchWeeks(); // Refresh weeks to show updated services
+    } catch (error) {
+      console.error('Failed to update services:', error);
+      message.error('Failed to update services. Please try again.');
+    } finally {
+      setServiceLoading(false);
+    }
+  };
+
+  const handleServiceCancel = () => {
+    setServiceModalVisible(false);
+    setSelectedWeek(null);
+    serviceForm.resetFields();
+  };
+
+  const getMinisterName = (ministerId: string) => {
+    const minister = ministers.find(m => m.id === ministerId);
+    return minister ? `${minister.first_name} ${minister.last_name}` : 'Unassigned';
+  };
+
+  const getServiceDisplay = (services: Service[]) => {
+    if (!services || services.length === 0) {
+      return <Tag color="orange">Services not configured</Tag>;
+    }
+    
+    return (
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
+        {services.map((service, index) => (
+          <div key={index} style={{ fontSize: '12px' }}>
+            <Text strong>{service.name} ({service.time}):</Text>
+            <br />
+            <Tag color={service.sic ? 'green' : 'orange'}>
+              {service.sic ? getMinisterName(service.sic) : 'Unassigned'}
+            </Tag>
+          </div>
+        ))}
+      </Space>
+    );
   };
 
   const getWeekTitle = (week: Week) => {
@@ -183,11 +249,18 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
 
   useEffect(() => {
     fetchWeeks();
+    fetchMinisters();
   }, [refreshTrigger]);
 
   useEffect(() => {
     filterWeeks();
   }, [weeks, selectedYear, selectedMonth]);
+
+  useEffect(() => {
+    if (serviceModalVisible) {
+      fetchMinisters();
+    }
+  }, [serviceModalVisible]);
 
   if (loading) {
     return (
@@ -272,40 +345,34 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
                       <Text strong>Week of {formatDate(week.start_time)}</Text>
                     </Space>
                   }
-                  extra={
-                    <Popconfirm
-                      title="Delete Week"
-                      description="Are you sure you want to delete this week?"
-                      onConfirm={() => handleDeleteWeek(week.id)}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button 
-                        type="text" 
-                        danger 
-                        size="small"
-                        icon={<DeleteOutlined />}
-                      />
-                    </Popconfirm>
-                  }
+
                   actions={[
-                    <Button 
-                      key="view"
-                      type="primary"
-                      size="small"
-                      icon={<EyeOutlined />}
-                      onClick={() => handleViewReviews(week)}
-                    >
-                      View Reviews
-                    </Button>,
-                    <Button 
-                      key="add"
-                      size="small"
-                      icon={<PlusOutlined />}
-                      onClick={() => handleAddReview(week)}
-                    >
-                      Add Review
-                    </Button>
+                    <Space key="actions" size="small" wrap style={{ justifyContent: 'center', width: '100%' }}>
+                      <Button 
+                        type="primary"
+                        size="small"
+                        icon={<EyeOutlined />}
+                        onClick={() => handleViewReviews(week)}
+                      >
+                        View Reviews
+                      </Button>
+                      <Button 
+                        type="default"
+                        size="small"
+                        icon={<PlusOutlined />}
+                        onClick={() => handleAddReview(week)}
+                      >
+                        Add Review
+                      </Button>
+                      <Button 
+                        type="default"
+                        size="small"
+                        icon={<TeamOutlined />}
+                        onClick={() => handleManageServices(week)}
+                      >
+                        Manage SIC
+                      </Button>
+                    </Space>
                   ]}
                 >
                   <Space direction="vertical" size="small" style={{ width: '100%' }}>
@@ -325,6 +392,12 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
                       <Text strong>Duration:</Text>
                       <br />
                       <Tag color="blue">{getWeekDuration(week.start_time, week.end_time)}</Tag>
+                    </div>
+                    
+                    <div>
+                      <Text strong>Services:</Text>
+                      <br />
+                      {getServiceDisplay(week.services)}
                     </div>
                     
                     <Divider style={{ margin: '8px 0' }} />
@@ -349,6 +422,93 @@ const WeeksList: React.FC<WeeksListProps> = ({ refreshTrigger }) => {
           </div>
         </>
       )}
+      
+      {/* Service Management Modal */}
+      <Modal
+        title={`Manage Services - ${selectedWeek ? getWeekTitle(selectedWeek) : ''}`}
+        open={serviceModalVisible}
+        onOk={handleServiceSubmit}
+        onCancel={handleServiceCancel}
+        confirmLoading={serviceLoading}
+        width={600}
+        okText="Save Services"
+      >
+        <Form
+          form={serviceForm}
+          layout="vertical"
+          initialValues={{
+            services: [
+              { name: 'Voltage', time: '11AM', sic: '' },
+              { name: 'Little Eagle, All Star, Super Trooper', time: '11AM', sic: '' },
+              { name: 'Little Eagle, All Star, Super Trooper', time: '1PM', sic: '' }
+            ]
+          }}
+        >
+          <Form.List name="services">
+            {(fields) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Card key={key} size="small" style={{ marginBottom: 16 }}>
+                    <Row gutter={16} align="top">
+                      <Col span={10}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'name']}
+                          label="Service Name"
+                          rules={[{ required: true, message: 'Service name is required' }]}
+                        >
+                          <Select disabled>
+                            <Select.Option value="Voltage">Voltage</Select.Option>
+                            <Select.Option value="Little Eagle, All Star, Super Trooper">
+                              Little Eagle, All Star, Super Trooper
+                            </Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'time']}
+                          label="Time"
+                          rules={[{ required: true, message: 'Time is required' }]}
+                        >
+                          <Select disabled>
+                            <Select.Option value="11AM">11AM</Select.Option>
+                            <Select.Option value="1PM">1PM</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'sic']}
+                          label="Service in Charge"
+                        >
+                          <Select
+                             placeholder="Select Minister"
+                             allowClear
+                             showSearch
+                             filterOption={(input, option) => {
+                               const label = option?.label || option?.children;
+                               return String(label).toLowerCase().includes(input.toLowerCase());
+                             }}
+                          >
+                            {ministers.map(minister => (
+                              <Select.Option key={minister.id} value={minister.id}>
+                                {minister.first_name} {minister.last_name}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+              </>
+            )}
+          </Form.List>
+        </Form>
+      </Modal>
     </div>
   );
 };
