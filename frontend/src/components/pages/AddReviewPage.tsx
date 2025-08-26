@@ -1,27 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import {
-  Form,
-  Input,
-  Button,
-  Card,
-  Typography,
-  Alert,
-  Spin,
-  Space,
-  Row,
-  Col,
-  Divider,
-  Tag,
-  message
-} from 'antd';
-import {
-  ArrowLeftOutlined,
-  CheckCircleOutlined,
-  EditOutlined,
-  CalendarOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+import { Card, Button, Typography, Alert, Space, Form, message, Divider, Input, Spin, Row, Col, Tag } from 'antd';
+import { ArrowLeftOutlined, CheckCircleOutlined, PlusOutlined, EditOutlined, RobotOutlined, CalendarOutlined } from '@ant-design/icons';
 import { apiService, CreateReviewRequest, Review } from '../../services/api';
 import dayjs from 'dayjs';
 
@@ -42,6 +22,7 @@ const AddReviewPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdReview, setCreatedReview] = useState<Review | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const weekTitle = state?.weekTitle || `Week ${weekId}`;
 
@@ -85,6 +66,50 @@ const AddReviewPage: React.FC = () => {
   const handleAddAnother = () => {
     setCreatedReview(null);
     setError(null);
+  };
+
+  const handleAiSummarize = async () => {
+    const whatWentWell = form.getFieldValue('whatWentWell');
+    const canImprove = form.getFieldValue('canImprove');
+    const actionPlans = form.getFieldValue('actionPlans');
+    
+    if (!whatWentWell || !canImprove) {
+      message.warning('Please fill in "What Went Well" and "What Can Be Improved" fields first');
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/ai/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          what_went_well: whatWentWell,
+          can_improve: canImprove,
+          action_plans: actionPlans || '',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.data && data.data.summary) {
+        form.setFieldsValue({ summary: data.data.summary });
+        message.success('AI summary generated successfully!');
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (err) {
+      console.error('AI summarization error:', err);
+      message.error('Failed to generate AI summary. Please try again.');
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -279,10 +304,9 @@ const AddReviewPage: React.FC = () => {
               >
                 <TextArea
                   placeholder="Describe what went well during this week..."
+                  maxLength={1000}
                   rows={4}
                   showCount
-                  maxLength={1000}
-                  style={{ resize: 'none' }}
                 />
               </Form.Item>
 
@@ -296,10 +320,9 @@ const AddReviewPage: React.FC = () => {
               >
                 <TextArea
                   placeholder="Describe areas that can be improved..."
+                  maxLength={1000}
                   rows={4}
                   showCount
-                  maxLength={1000}
-                  style={{ resize: 'none' }}
                 />
               </Form.Item>
 
@@ -313,16 +336,29 @@ const AddReviewPage: React.FC = () => {
               >
                 <TextArea
                   placeholder="Outline specific action plans for improvement..."
+                  maxLength={1000}
                   rows={4}
                   showCount
-                  maxLength={1000}
-                  style={{ resize: 'none' }}
                 />
               </Form.Item>
 
               <Form.Item
                 name="summary"
-                label={<Text strong style={{ color: '#722ed1' }}>Summary:</Text>}
+                label={
+                  <Space>
+                    <Text strong style={{ color: '#722ed1' }}>Summary:</Text>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<RobotOutlined />}
+                      loading={aiLoading}
+                      onClick={handleAiSummarize}
+                      style={{ padding: 0, height: 'auto' }}
+                    >
+                      AI Summarize
+                    </Button>
+                  </Space>
+                }
                 rules={[
                   { required: true, message: 'Please provide a summary' },
                   { whitespace: true, message: 'Please enter valid content' }
@@ -330,10 +366,9 @@ const AddReviewPage: React.FC = () => {
               >
                 <TextArea
                   placeholder="Provide an overall summary of the week..."
+                  maxLength={500}
                   rows={3}
                   showCount
-                  maxLength={500}
-                  style={{ resize: 'none' }}
                 />
               </Form.Item>
 

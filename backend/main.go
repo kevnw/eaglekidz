@@ -85,6 +85,7 @@ func main() {
 	// Create handlers
 	weekHandler := handlers.NewWeekHandler()
 	reviewHandler := handlers.NewReviewHandler()
+	aiHandler := handlers.NewAIHandler()
 
 	// Create a new router
 	r := mux.NewRouter()
@@ -114,6 +115,9 @@ func main() {
 	api.HandleFunc("/reviews/{id}", reviewHandler.UpdateReview).Methods("PUT", "OPTIONS")
 	api.HandleFunc("/reviews/{id}", reviewHandler.DeleteReview).Methods("DELETE", "OPTIONS")
 	api.HandleFunc("/weeks/{weekId}/reviews", reviewHandler.GetReviewsByWeek).Methods("GET", "OPTIONS")
+
+	// AI routes
+	api.HandleFunc("/ai/summarize", aiHandler.GenerateSummary).Methods("POST", "OPTIONS")
 
 	// Start server
 	port := ":8080"
