@@ -92,11 +92,95 @@ All endpoints return JSON responses in the following format:
 2. Register routes using the mux router
 3. Follow the existing response format for consistency
 
+## Frontend (React TypeScript)
+
+The frontend is built with React and TypeScript, providing a modern web interface that communicates with the Go backend.
+
+### Features
+
+- React with TypeScript for type safety
+- Real-time API integration with backend
+- Error handling and loading states
+- Responsive UI components
+- API service layer for backend communication
+
+### Prerequisites
+
+- Node.js 16+ and npm
+
+### Running the Frontend
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+The frontend will start on port 3000 and automatically open in your browser.
+
+### Frontend API Integration
+
+The frontend includes an API service (`src/services/api.ts`) that communicates with the backend:
+
+- **Health Check**: Displays server status and version info
+- **Welcome API**: Shows welcome message from backend
+- **API Status**: Real-time status monitoring
+
+### Frontend Development
+
+#### Project Structure
+
+```
+frontend/
+├── src/
+│   ├── App.tsx           # Main application component
+│   ├── services/
+│   │   └── api.ts         # API service for backend communication
+│   └── ...
+├── package.json           # Dependencies and scripts
+└── tsconfig.json          # TypeScript configuration
+```
+
+#### Adding New Features
+
+1. Create new components in `src/components/`
+2. Add API methods to `src/services/api.ts`
+3. Update types and interfaces as needed
+4. Follow existing patterns for error handling
+
 ## Getting Started
 
+### Full-Stack Development
+
 1. Clone the repository
-2. Follow the backend setup instructions above
-3. The API will be available at http://localhost:8080
+2. Start the backend server (port 8080):
+   ```bash
+   cd backend
+   go mod tidy
+   go run main.go
+   ```
+3. Start the frontend server (port 3000):
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+4. Open http://localhost:3000 to view the application
+
+### Quick Start
+
+For development, you'll need both servers running:
+- Backend API: http://localhost:8080
+- Frontend App: http://localhost:3000
 
 ## Contributing
 
