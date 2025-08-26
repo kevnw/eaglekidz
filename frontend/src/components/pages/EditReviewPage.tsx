@@ -33,6 +33,7 @@ const { TextArea } = Input;
 interface LocationState {
   weekTitle?: string;
   review?: Review;
+  previousPath?: string;
 }
 
 const EditReviewPage: React.FC = () => {
@@ -139,7 +140,15 @@ const EditReviewPage: React.FC = () => {
   };
 
   const handleBackToWeeks = () => {
-    navigate('/weeks');
+    // Check if we have a previous path from navigation state
+    if (state?.previousPath) {
+      navigate(state.previousPath);
+    } else if (weekId) {
+      // Default behavior: if accessed from week context, go back to weeks
+      navigate('/weeks');
+    } else {
+      navigate('/reviews');
+    }
   };
 
   const handleAiSummarize = async () => {
@@ -198,10 +207,10 @@ const EditReviewPage: React.FC = () => {
           <div>
             <Button
               icon={<ArrowLeftOutlined />}
-              onClick={handleBackToReviews}
+              onClick={handleBackToWeeks}
               style={{ marginBottom: '16px' }}
             >
-              Back to Reviews
+              {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
             </Button>
             
             <Card
@@ -240,10 +249,10 @@ const EditReviewPage: React.FC = () => {
           <div>
             <Button
               icon={<ArrowLeftOutlined />}
-              onClick={handleBackToReviews}
+              onClick={handleBackToWeeks}
               style={{ marginBottom: '16px' }}
             >
-              Back to Reviews
+              Back to Weeks
             </Button>
             
             <Card
@@ -329,31 +338,16 @@ const EditReviewPage: React.FC = () => {
             </Space>
           </Card>
 
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Button
-                type="primary"
-                icon={<ArrowLeftOutlined />}
-                onClick={handleBackToReviews}
-                size="large"
-                block
-                style={{ background: '#fadb14', borderColor: '#fadb14', color: '#000' }}
-              >
-                Back to Reviews
-              </Button>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Button
-                type="default"
-                icon={<ArrowLeftOutlined />}
-                onClick={handleBackToWeeks}
-                size="large"
-                block
-              >
-                Back to Weeks
-              </Button>
-            </Col>
-          </Row>
+          <Button
+            type="primary"
+            icon={<ArrowLeftOutlined />}
+            onClick={handleBackToWeeks}
+            size="large"
+            block
+            style={{ background: '#fadb14', borderColor: '#fadb14', color: '#000' }}
+          >
+            {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
+          </Button>
         </Space>
       </div>
     );
@@ -367,11 +361,11 @@ const EditReviewPage: React.FC = () => {
           <div>
             <Button
               icon={<ArrowLeftOutlined />}
-              onClick={handleBackToReviews}
+              onClick={handleBackToWeeks}
               disabled={loading}
               style={{ marginBottom: '16px' }}
             >
-              Back to Reviews
+              {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
             </Button>
             
             <Card
@@ -495,7 +489,7 @@ const EditReviewPage: React.FC = () => {
                   <Col xs={24} sm={12}>
                     <Button
                       type="default"
-                      onClick={handleBackToReviews}
+                      onClick={handleBackToWeeks}
                       disabled={loading}
                       size="large"
                       block

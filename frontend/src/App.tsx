@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { ConfigProvider, Layout, Menu, Card, Button, Typography } from 'antd';
 import { CalendarOutlined, FileTextOutlined, BarChartOutlined, TeamOutlined } from '@ant-design/icons';
 import { WeeksPage, AddReviewPage, ViewReviewsPage, EditReviewPage } from './components';
+import { MinistersPage, ChildrenPage } from './components/people';
+import { ReviewsPage } from './components/pages';
 import { apiService, ApiResponse, HealthData } from './services/api';
 import 'antd/dist/reset.css';
 
@@ -41,35 +43,47 @@ function HomePage() {
           </Card>
         </Link>
         
-        <Card
-          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
-          bodyStyle={{ padding: '32px' }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <FileTextOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
-            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Reviews</Title>
-            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
-              Track weekly reviews and improvements
-            </Paragraph>
-            <Button disabled size="large">
-              Coming Soon
-            </Button>
-          </div>
-        </Card>
+        <Link to="/reviews" style={{ textDecoration: 'none' }}>
+          <Card
+            hoverable
+            style={{ height: '100%', borderRadius: '12px' }}
+            bodyStyle={{ padding: '32px' }}
+          >
+            <div style={{ textAlign: 'center' }}>
+              <FileTextOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '16px' }} />
+              <Title level={3} style={{ marginBottom: '12px' }}>Reviews</Title>
+              <Paragraph style={{ marginBottom: '24px', color: '#666' }}>
+                Track weekly reviews and improvements
+              </Paragraph>
+              <Button type="primary" size="large">
+                View Reviews
+              </Button>
+            </div>
+          </Card>
+        </Link>
         
         <Card
-          style={{ height: '100%', borderRadius: '12px', opacity: 0.7 }}
+          style={{ height: '100%', borderRadius: '12px' }}
           bodyStyle={{ padding: '32px' }}
         >
           <div style={{ textAlign: 'center' }}>
-            <TeamOutlined style={{ fontSize: '48px', color: '#999', marginBottom: '16px' }} />
-            <Title level={3} style={{ marginBottom: '12px', color: '#999' }}>Scheduling</Title>
-            <Paragraph style={{ marginBottom: '24px', color: '#999' }}>
-              Schedule ministers for weekly church activities
+            <TeamOutlined style={{ fontSize: '48px', color: '#1890ff', marginBottom: '16px' }} />
+            <Title level={3} style={{ marginBottom: '12px' }}>People Management</Title>
+            <Paragraph style={{ marginBottom: '24px', color: '#666' }}>
+              Manage ministers and children information
             </Paragraph>
-            <Button disabled size="large">
-              Coming Soon
-            </Button>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <Link to="/people/ministers" style={{ textDecoration: 'none' }}>
+                <Button type="primary" size="large">
+                  Manage Ministers
+                </Button>
+              </Link>
+              <Link to="/people/children" style={{ textDecoration: 'none' }}>
+                <Button type="primary" size="large">
+                  Manage Children
+                </Button>
+              </Link>
+            </div>
           </div>
         </Card>
         
@@ -99,6 +113,8 @@ function Navigation() {
   const getSelectedKey = () => {
     if (location.pathname === '/') return 'home';
     if (location.pathname.startsWith('/weeks')) return 'weeks';
+    if (location.pathname.startsWith('/people')) return 'people';
+    if (location.pathname.startsWith('/reviews')) return 'reviews';
     return 'home';
   };
 
@@ -114,10 +130,24 @@ function Navigation() {
       label: <Link to="/weeks" style={{ textDecoration: 'none', marginLeft: '1px' }}>Weeks</Link>,
     },
     {
+      key: 'people',
+      icon: <TeamOutlined />,
+      label: 'People',
+      children: [
+        {
+          key: 'ministers',
+          label: <Link to="/people/ministers" style={{ textDecoration: 'none' }}>Ministers</Link>,
+        },
+        {
+          key: 'children',
+          label: <Link to="/people/children" style={{ textDecoration: 'none' }}>Children</Link>,
+        },
+      ],
+    },
+    {
       key: 'reviews',
       icon: <FileTextOutlined />,
-      label: <span style={{ marginLeft: '1px' }}>Reviews</span>,
-      disabled: true,
+      label: <Link to="/reviews" style={{ textDecoration: 'none', marginLeft: '1px' }}>Reviews</Link>,
     },
   ];
 
@@ -174,6 +204,11 @@ function App() {
               <Route path="/weeks/:weekId/add-review" element={<AddReviewPage />} />
               <Route path="/weeks/:weekId/reviews" element={<ViewReviewsPage />} />
               <Route path="/weeks/:weekId/reviews/:reviewId/edit" element={<EditReviewPage />} />
+              <Route path="/people/ministers" element={<MinistersPage />} />
+              <Route path="/people/children" element={<ChildrenPage />} />
+              <Route path="/reviews" element={<ReviewsPage />} />
+              <Route path="/reviews/:reviewId" element={<ViewReviewsPage />} />
+              <Route path="/reviews/:reviewId/edit" element={<EditReviewPage />} />
             </Routes>
           </Content>
         </Layout>

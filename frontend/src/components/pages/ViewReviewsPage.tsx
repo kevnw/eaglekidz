@@ -9,28 +9,63 @@ const { Title, Text, Paragraph } = Typography;
 
 interface LocationState {
   weekTitle?: string;
+  previousPath?: string;
 }
 
 const ViewReviewsPage: React.FC = () => {
-  const { weekId } = useParams<{ weekId: string }>();
+  const { weekId, reviewId } = useParams<{ weekId?: string; reviewId?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
   
   const [reviews, setReviews] = useState<Review[]>([]);
   const [deletedReviews, setDeletedReviews] = useState<Review[]>([]);
+  const [singleReview, setSingleReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
   const [deletedLoading, setDeletedLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [hardDeleting, setHardDeleting] = useState(false);
 
-  const weekTitle = state?.weekTitle || `Week ${weekId}`;
+  const weekTitle = state?.weekTitle || (weekId ? `Week ${weekId}` : 'Review Details');
 
   useEffect(() => {
-    fetchReviews();
-    fetchDeletedReviews();
-  }, [weekId]);
+    if (reviewId) {
+      // Direct review access - fetch single review
+      fetchSingleReview();
+    } else if (weekId) {
+      // Week-based access - fetch all reviews for the week
+      fetchReviews();
+      fetchDeletedReviews();
+    }
+  }, [weekId, reviewId]);
+
+  const fetchSingleReview = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      if (!reviewId) {
+        throw new Error('Review ID is missing');
+      }
+      
+      const response = await apiService.getReviewById(reviewId);
+      
+      if (response.data) {
+        setSingleReview(response.data);
+      } else {
+        throw new Error('Review not found');
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to load review. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -87,7 +122,15 @@ const ViewReviewsPage: React.FC = () => {
   };
 
   const handleBackToWeeks = () => {
-    navigate('/weeks');
+    // Check if we have a previous path from navigation state
+    if (state?.previousPath) {
+      navigate(state.previousPath);
+    } else if (weekId) {
+      // Default behavior: if accessed from week context, go back to weeks
+      navigate('/weeks');
+    } else {
+      navigate('/reviews');
+    }
   };
 
   const handleAddReview = () => {
@@ -98,9 +141,17 @@ const ViewReviewsPage: React.FC = () => {
 
   const handleEditReview = (review: Review) => {
     // Navigate to edit review page
-    navigate(`/weeks/${weekId}/reviews/${review.id}/edit`, {
-      state: { weekTitle, review }
-    });
+    if (weekId) {
+      // Week-based navigation
+      navigate(`/weeks/${weekId}/reviews/${review.id}/edit`, {
+        state: { weekTitle, review, previousPath: `/weeks/${weekId}/reviews` }
+      });
+    } else {
+      // Direct review navigation
+      navigate(`/reviews/${review.id}/edit`, {
+        state: { weekTitle, review, previousPath: state?.previousPath }
+      });
+    }
   };
 
   const handleDeleteClick = async (review: Review) => {
@@ -175,6 +226,164 @@ const ViewReviewsPage: React.FC = () => {
     );
   }
 
+  // Show loading spinner
+  if (loading) {
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // Single review view (when accessed via /reviews/:reviewId)
+  if (reviewId && singleReview) {
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+        {/* Header */}
+        <Card style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <Title level={2} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileTextOutlined style={{ color: '#fadb14' }} />
+                Review Details
+              </Title>
+              <Text type="secondary">{weekTitle}</Text>
+            </div>
+            <Space>
+              <Button 
+                icon={<ArrowLeftOutlined />}
+                onClick={handleBackToWeeks}
+              >
+                {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
+              </Button>
+              <Button 
+                type="primary"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/reviews/${singleReview.id}/edit`, { state })}
+              >
+                Edit Review
+              </Button>
+            </Space>
+          </div>
+        </Card>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert
+            message="Error"
+            description={error}
+            type="error"
+            showIcon
+            closable
+            onClose={() => setError(null)}
+            style={{ marginBottom: '24px' }}
+          />
+        )}
+
+        {/* Single Review Content */}
+        <Card
+          title={
+            <Space>
+              <FileTextOutlined />
+              <span>Review Details</span>
+              <Tag color="blue" icon={<ClockCircleOutlined />}>
+                Created: {formatDate(singleReview.created_at)}
+              </Tag>
+              {singleReview.updated_at !== singleReview.created_at && (
+                <Tag color="green" icon={<ClockCircleOutlined />}>
+                  Updated: {formatDate(singleReview.updated_at)}
+                </Tag>
+              )}
+            </Space>
+          }
+          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+        >
+          <Row gutter={[24, 24]}>
+            <Col xs={24} lg={12}>
+              <div style={{ marginBottom: '24px' }}>
+                <Title level={4} style={{ color: '#52c41a', marginBottom: '12px' }}>
+                  What Went Well:
+                </Title>
+                <div style={{ 
+                  background: '#f6ffed', 
+                  border: '1px solid #b7eb8f', 
+                  borderRadius: '6px', 
+                  padding: '16px',
+                  minHeight: '100px'
+                }}>
+                  <Text>{singleReview.what_went_well || 'No content provided'}</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={24} lg={12}>
+              <div style={{ marginBottom: '24px' }}>
+                <Title level={4} style={{ color: '#faad14', marginBottom: '12px' }}>
+                  Can Improve:
+                </Title>
+                <div style={{ 
+                  background: '#fffbe6', 
+                  border: '1px solid #ffe58f', 
+                  borderRadius: '6px', 
+                  padding: '16px',
+                  minHeight: '100px'
+                }}>
+                  <Text>{singleReview.can_improve || 'No content provided'}</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={24}>
+              <div style={{ marginBottom: '24px' }}>
+                <Title level={4} style={{ color: '#1890ff', marginBottom: '12px' }}>
+                  Action Plans:
+                </Title>
+                <div style={{ 
+                  background: '#f0f5ff', 
+                  border: '1px solid #adc6ff', 
+                  borderRadius: '6px', 
+                  padding: '16px',
+                  minHeight: '100px'
+                }}>
+                  <Text>{singleReview.action_plans || 'No action plans provided'}</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={24}>
+              <div>
+                <Title level={4} style={{ color: '#722ed1', marginBottom: '12px' }}>
+                  Summary:
+                </Title>
+                <div style={{ 
+                  background: '#f9f0ff', 
+                  border: '1px solid #d3adf7', 
+                  borderRadius: '6px', 
+                  padding: '16px',
+                  minHeight: '100px'
+                }}>
+                  {singleReview.summary && singleReview.summary.trim() && singleReview.summary !== '<p></p>' ? (
+                    <div dangerouslySetInnerHTML={{ __html: singleReview.summary }} />
+                  ) : (
+                    <Text type="secondary">No summary available</Text>
+                  )}
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* Back Button */}
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+          <Button 
+            size="large"
+            onClick={handleBackToWeeks}
+          >
+            {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Multiple reviews view (when accessed via /weeks/:weekId/reviews)
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
       {/* Header */}
@@ -192,15 +401,17 @@ const ViewReviewsPage: React.FC = () => {
               icon={<ArrowLeftOutlined />}
               onClick={handleBackToWeeks}
             >
-              Back to Weeks
+              {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
             </Button>
-            <Button 
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddReview}
-            >
-              Add New Review
-            </Button>
+            {weekId && (
+              <Button 
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddReview}
+              >
+                Add New Review
+              </Button>
+            )}
           </Space>
         </div>
       </Card>
@@ -366,8 +577,15 @@ const ViewReviewsPage: React.FC = () => {
                           fontSize: '14px',
                           lineHeight: '1.5'
                         }}
-                        dangerouslySetInnerHTML={{ __html: review.summary }}
-                      />
+                      >
+                        {review.summary && review.summary.trim() && review.summary !== '<p></p>' ? (
+                          <div dangerouslySetInnerHTML={{ __html: review.summary }} />
+                        ) : (
+                          <Text type="secondary" style={{ fontStyle: 'italic' }}>
+                            No summary available
+                          </Text>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Updated Badge */}
@@ -537,7 +755,7 @@ const ViewReviewsPage: React.FC = () => {
           icon={<ArrowLeftOutlined />}
           onClick={handleBackToWeeks}
         >
-          Back to Weeks
+          {state?.previousPath === '/reviews' ? 'Back to Reviews' : 'Back to Weeks'}
         </Button>
       </div>
     </div>

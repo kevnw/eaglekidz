@@ -13,6 +13,7 @@ import (
 
 	"eaglekidz-backend/database"
 	"eaglekidz-backend/handlers"
+	"eaglekidz-backend/services"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -88,10 +89,14 @@ func main() {
 
 	fmt.Println("Connected to MongoDB successfully")
 
+	// Create services
+	peopleService := services.NewPeopleService(database.Database)
+
 	// Create handlers
 	weekHandler := handlers.NewWeekHandler()
 	reviewHandler := handlers.NewReviewHandler()
 	aiHandler := handlers.NewAIHandler()
+	peopleHandler := handlers.NewPeopleHandler(peopleService)
 
 	// Create a new router
 	r := mux.NewRouter()
@@ -125,6 +130,17 @@ func main() {
 	api.HandleFunc("/reviews/{id}/permanent", reviewHandler.HardDeleteReview).Methods("DELETE", "OPTIONS")
 	api.HandleFunc("/reviews/{id}/restore", reviewHandler.RestoreReview).Methods("PUT", "OPTIONS")
 
+	// People routes
+	api.HandleFunc("/people", peopleHandler.CreatePeople).Methods("POST", "OPTIONS")
+	api.HandleFunc("/people", peopleHandler.GetAllPeople).Methods("GET", "OPTIONS")
+	api.HandleFunc("/people/type/{type}", peopleHandler.GetPeopleByType).Methods("GET", "OPTIONS")
+	api.HandleFunc("/people/{id}", peopleHandler.GetPeople).Methods("GET", "OPTIONS")
+	api.HandleFunc("/people/{id}", peopleHandler.UpdatePeople).Methods("PUT", "OPTIONS")
+	api.HandleFunc("/people/{id}", peopleHandler.DeletePeople).Methods("DELETE", "OPTIONS")
+	api.HandleFunc("/people/deleted", peopleHandler.GetDeletedPeople).Methods("GET", "OPTIONS")
+	api.HandleFunc("/people/{id}/permanent", peopleHandler.HardDeletePeople).Methods("DELETE", "OPTIONS")
+	api.HandleFunc("/people/{id}/restore", peopleHandler.RestorePeople).Methods("PUT", "OPTIONS")
+
 	// AI routes
 	api.HandleFunc("/ai/summarize", aiHandler.GenerateSummary).Methods("POST", "OPTIONS")
 
@@ -148,6 +164,15 @@ func main() {
 	fmt.Println("  GET /api/v1/weeks/{weekId}/deleted-reviews - Get deleted reviews by week")
 	fmt.Println("  DELETE /api/v1/reviews/{id}/permanent - Permanently delete review")
 	fmt.Println("  PUT /api/v1/reviews/{id}/restore - Restore deleted review")
+	fmt.Println("  POST /api/v1/people - Create person")
+	fmt.Println("  GET /api/v1/people - Get all people")
+	fmt.Println("  GET /api/v1/people/type/{type} - Get people by type (minister/children)")
+	fmt.Println("  GET /api/v1/people/{id} - Get person by ID")
+	fmt.Println("  PUT /api/v1/people/{id} - Update person")
+	fmt.Println("  DELETE /api/v1/people/{id} - Soft delete person")
+	fmt.Println("  GET /api/v1/people/deleted - Get deleted people")
+	fmt.Println("  DELETE /api/v1/people/{id}/permanent - Permanently delete person")
+	fmt.Println("  PUT /api/v1/people/{id}/restore - Restore deleted person")
 
 	// Create HTTP server
 	srv := &http.Server{

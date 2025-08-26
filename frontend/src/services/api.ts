@@ -53,6 +53,37 @@ export interface UpdateReviewRequest {
   summary?: string;
 }
 
+export interface People {
+  id: string;
+  name: string;
+  type: 'minister' | 'children';
+  age?: number;
+  phone?: string;
+  email?: string;
+  notes?: string;
+  deleted: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreatePeopleRequest {
+  name: string;
+  type: 'minister' | 'children';
+  age?: number;
+  phone?: string;
+  email?: string;
+  notes?: string;
+}
+
+export interface UpdatePeopleRequest {
+  name?: string;
+  type?: 'minister' | 'children';
+  age?: number;
+  phone?: string;
+  email?: string;
+  notes?: string;
+}
+
 export interface WeeksResponse extends ApiResponse<Week[]> {
   success: boolean;
 }
@@ -66,6 +97,14 @@ export interface ReviewsResponse extends ApiResponse<Review[]> {
 }
 
 export interface ReviewResponse extends ApiResponse<Review> {
+  success: boolean;
+}
+
+export interface PeopleResponse extends ApiResponse<People[]> {
+  success: boolean;
+}
+
+export interface PersonResponse extends ApiResponse<People> {
   success: boolean;
 }
 
@@ -183,7 +222,56 @@ class ApiService {
   }
 
   async restoreReview(id: string): Promise<ApiResponse<Review>> {
-    return this.fetchApi(`/api/v1/reviews/${id}/restore`, {
+    return this.fetchApi<Review>(`/api/v1/reviews/${id}/restore`, {
+      method: 'PUT',
+    });
+  }
+
+  // People API methods
+  async createPeople(peopleData: CreatePeopleRequest): Promise<ApiResponse<People>> {
+    return this.fetchApi<People>('/api/v1/people', {
+      method: 'POST',
+      body: JSON.stringify(peopleData),
+    });
+  }
+
+  async getAllPeople(): Promise<ApiResponse<People[]>> {
+    return this.fetchApi<People[]>('/api/v1/people');
+  }
+
+  async getPeopleByType(type: 'minister' | 'children'): Promise<ApiResponse<People[]>> {
+    return this.fetchApi<People[]>(`/api/v1/people/type/${type}`);
+  }
+
+  async getPeopleById(id: string): Promise<ApiResponse<People>> {
+    return this.fetchApi<People>(`/api/v1/people/${id}`);
+  }
+
+  async updatePeople(id: string, peopleData: UpdatePeopleRequest): Promise<ApiResponse<People>> {
+    return this.fetchApi<People>(`/api/v1/people/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(peopleData),
+    });
+  }
+
+  async deletePeople(id: string): Promise<ApiResponse> {
+    return this.fetchApi(`/api/v1/people/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getDeletedPeople(): Promise<ApiResponse<People[]>> {
+    return this.fetchApi<People[]>('/api/v1/people/deleted');
+  }
+
+  async hardDeletePeople(id: string): Promise<ApiResponse> {
+    return this.fetchApi(`/api/v1/people/${id}/permanent`, {
+      method: 'DELETE',
+    });
+  }
+
+  async restorePeople(id: string): Promise<ApiResponse<People>> {
+    return this.fetchApi<People>(`/api/v1/people/${id}/restore`, {
       method: 'PUT',
     });
   }
