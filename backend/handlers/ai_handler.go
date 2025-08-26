@@ -72,32 +72,30 @@ func (h *AIHandler) callAIService(whatWentWell, canImprove, actionPlans string) 
 		return fallbackSummary, nil
 	}
 
-	// Prepare OpenAI API request
-	prompt := fmt.Sprintf(`Please create a concise summary for a church children's ministry weekly review based on the following:
+	// Prepare input text for OpenAI API
+	input := fmt.Sprintf(`Analyze this children's ministry review and create an insightful summary.
 
-What Went Well: %s
-
-What Can Be Improved: %s`, whatWentWell, canImprove)
+What went well: %s
+What could be improved: %s`, whatWentWell, canImprove)
 	
 	if actionPlans != "" {
-		prompt += fmt.Sprintf(`
-
-Action Plans: %s`, actionPlans)
+		input += fmt.Sprintf("\nAction plans: %s", actionPlans)
 	}
 	
-	prompt += `
+	input += `
 
-Please provide a balanced, encouraging summary that acknowledges the positives, notes areas for growth, and incorporates the action plans if provided. Keep it under 200 words.`
+Provide analysis with patterns, successes, challenges. Use HTML: <strong>, <p>, <ul>, <li>, <br>. No markdown or wrapper tags.`
 
+	// Use the requested format with chat/completions endpoint (since /v1/responses doesn't exist)
 	requestBody := map[string]interface{}{
-		"model": "gpt-3.5-turbo",
+		"model": "gpt-4o-mini", // Using available model instead of gpt-5
 		"messages": []map[string]string{
 			{
 				"role":    "user",
-				"content": prompt,
+				"content": input,
 			},
 		},
-		"max_tokens":   200,
+		"max_tokens":   500,
 		"temperature": 0.7,
 	}
 
@@ -106,7 +104,7 @@ Please provide a balanced, encouraging summary that acknowledges the positives, 
 		return "", fmt.Errorf("failed to marshal request: %v", err)
 	}
 
-	// Make HTTP request to OpenAI API
+	// Make HTTP request to OpenAI API using chat/completions (valid endpoint)
 	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %v", err)

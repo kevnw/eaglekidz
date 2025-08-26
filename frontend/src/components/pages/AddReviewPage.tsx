@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, Button, Typography, Alert, Space, Form, message, Divider, Input, Spin, Row, Col, Tag } from 'antd';
 import { ArrowLeftOutlined, CheckCircleOutlined, PlusOutlined, EditOutlined, RobotOutlined, CalendarOutlined } from '@ant-design/icons';
 import { apiService, CreateReviewRequest, Review } from '../../services/api';
+import TipTapEditor from '../TipTapEditor';
 import dayjs from 'dayjs';
 
 const { Title, Paragraph, Text } = Typography;
@@ -37,10 +38,10 @@ const AddReviewPage: React.FC = () => {
 
       const reviewData: CreateReviewRequest = {
         week_id: weekId,
-        what_went_well: values.whatWentWell.trim(),
-        can_improve: values.canImprove.trim(),
-        action_plans: values.actionPlans.trim(),
-        summary: values.summary.trim(),
+        what_went_well: values.whatWentWell?.trim() || '',
+        can_improve: values.canImprove?.trim() || '',
+        action_plans: values.actionPlans?.trim() || '',
+        summary: values.summary?.trim() || '',
       };
 
       const response = await apiService.createReview(reviewData);
@@ -198,9 +199,17 @@ const AddReviewPage: React.FC = () => {
                 <Title level={4} style={{ color: '#722ed1', marginBottom: '8px' }}>
                   Summary:
                 </Title>
-                <Paragraph style={{ background: '#f9f0ff', padding: '12px', borderRadius: '6px', margin: 0 }}>
-                  {createdReview.summary}
-                </Paragraph>
+                <div 
+                  style={{ 
+                    background: '#f9f0ff', 
+                    padding: '12px', 
+                    borderRadius: '6px', 
+                    margin: 0,
+                    fontSize: '14px',
+                    lineHeight: '1.5'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: createdReview.summary }}
+                />
               </div>
             </Space>
           </Card>
@@ -359,16 +368,10 @@ const AddReviewPage: React.FC = () => {
                     </Button>
                   </Space>
                 }
-                rules={[
-                  { required: true, message: 'Please provide a summary' },
-                  { whitespace: true, message: 'Please enter valid content' }
-                ]}
               >
-                <TextArea
+                <TipTapEditor
                   placeholder="Provide an overall summary of the week..."
-                  maxLength={500}
-                  rows={3}
-                  showCount
+                  height="120px"
                 />
               </Form.Item>
 

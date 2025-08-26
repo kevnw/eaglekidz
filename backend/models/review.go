@@ -14,6 +14,7 @@ type Review struct {
 	CanImprove   string             `bson:"can_improve" json:"can_improve"`
 	ActionPlans  string             `bson:"action_plans" json:"action_plans"`
 	Summary      string             `bson:"summary" json:"summary"`
+	Deleted      bool               `bson:"deleted" json:"deleted"`
 	CreatedAt    time.Time          `bson:"created_at" json:"created_at"`
 	UpdatedAt    time.Time          `bson:"updated_at" json:"updated_at"`
 }
@@ -24,7 +25,7 @@ type CreateReviewRequest struct {
 	WhatWentWell string `json:"what_went_well" binding:"required"`
 	CanImprove   string `json:"can_improve" binding:"required"`
 	ActionPlans  string `json:"action_plans" binding:"required"`
-	Summary      string `json:"summary" binding:"required"`
+	Summary      string `json:"summary"`
 }
 
 // UpdateReviewRequest represents the request payload for updating a review

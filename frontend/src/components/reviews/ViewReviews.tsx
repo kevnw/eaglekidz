@@ -206,9 +206,19 @@ const ViewReviews: React.FC<ViewReviewsProps> = ({ weekId, weekTitle, onClose })
                       <Title level={5} style={{ marginBottom: 8, color: '#722ed1' }}>
                         Summary:
                       </Title>
-                      <Paragraph style={{ marginBottom: 0, paddingLeft: 16 }}>
-                        {review.summary}
-                      </Paragraph>
+                      <div 
+                        style={{ 
+                          marginBottom: 0, 
+                          paddingLeft: 16,
+                          padding: '8px 12px', 
+                          border: '1px solid #f0f0f0', 
+                          borderRadius: '6px', 
+                          backgroundColor: '#fafafa',
+                          fontSize: '14px',
+                          lineHeight: '1.5'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: review.summary }}
+                      />
                     </div>
                     
                     {review.updated_at !== review.created_at && (

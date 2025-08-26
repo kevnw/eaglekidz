@@ -15,6 +15,7 @@ import (
 	"eaglekidz-backend/handlers"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 // Response represents a standard API response
@@ -74,6 +75,11 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	// Load environment variables from .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using system environment variables")
+	}
+
 	// Connect to MongoDB
 	if err := database.Connect(""); err != nil {
 		log.Fatal("Failed to connect to MongoDB:", err)
@@ -115,6 +121,9 @@ func main() {
 	api.HandleFunc("/reviews/{id}", reviewHandler.UpdateReview).Methods("PUT", "OPTIONS")
 	api.HandleFunc("/reviews/{id}", reviewHandler.DeleteReview).Methods("DELETE", "OPTIONS")
 	api.HandleFunc("/weeks/{weekId}/reviews", reviewHandler.GetReviewsByWeek).Methods("GET", "OPTIONS")
+	api.HandleFunc("/weeks/{weekId}/deleted-reviews", reviewHandler.GetDeletedReviewsByWeek).Methods("GET", "OPTIONS")
+	api.HandleFunc("/reviews/{id}/permanent", reviewHandler.HardDeleteReview).Methods("DELETE", "OPTIONS")
+	api.HandleFunc("/reviews/{id}/restore", reviewHandler.RestoreReview).Methods("PUT", "OPTIONS")
 
 	// AI routes
 	api.HandleFunc("/ai/summarize", aiHandler.GenerateSummary).Methods("POST", "OPTIONS")
@@ -134,8 +143,11 @@ func main() {
 	fmt.Println("  GET /api/v1/reviews - Get all reviews")
 	fmt.Println("  GET /api/v1/reviews/{id} - Get review by ID")
 	fmt.Println("  PUT /api/v1/reviews/{id} - Update review")
-	fmt.Println("  DELETE /api/v1/reviews/{id} - Delete review")
+	fmt.Println("  DELETE /api/v1/reviews/{id} - Soft delete review")
 	fmt.Println("  GET /api/v1/weeks/{weekId}/reviews - Get reviews by week")
+	fmt.Println("  GET /api/v1/weeks/{weekId}/deleted-reviews - Get deleted reviews by week")
+	fmt.Println("  DELETE /api/v1/reviews/{id}/permanent - Permanently delete review")
+	fmt.Println("  PUT /api/v1/reviews/{id}/restore - Restore deleted review")
 
 	// Create HTTP server
 	srv := &http.Server{

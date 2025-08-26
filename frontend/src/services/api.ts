@@ -33,6 +33,7 @@ export interface Review {
   can_improve: string;
   action_plans: string;
   summary: string;
+  deleted: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -168,6 +169,22 @@ class ApiService {
   async deleteReview(id: string): Promise<ApiResponse> {
     return this.fetchApi(`/api/v1/reviews/${id}`, {
       method: 'DELETE',
+    });
+  }
+
+  async getDeletedReviewsByWeekId(weekId: string): Promise<ApiResponse<Review[]>> {
+    return this.fetchApi<Review[]>(`/api/v1/weeks/${weekId}/deleted-reviews`);
+  }
+
+  async hardDeleteReview(id: string): Promise<ApiResponse> {
+    return this.fetchApi(`/api/v1/reviews/${id}/permanent`, {
+      method: 'DELETE',
+    });
+  }
+
+  async restoreReview(id: string): Promise<ApiResponse<Review>> {
+    return this.fetchApi(`/api/v1/reviews/${id}/restore`, {
+      method: 'PUT',
     });
   }
 }

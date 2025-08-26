@@ -152,3 +152,68 @@ func (h *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 		"message": "Review deleted successfully",
 	})
 }
+
+// GetDeletedReviewsByWeek handles GET /api/v1/weeks/{weekId}/deleted-reviews
+func (h *ReviewHandler) GetDeletedReviewsByWeek(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	weekID := vars["weekId"]
+
+	reviews, err := h.reviewService.GetDeletedReviewsByWeekID(r.Context(), weekID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"data":    reviews,
+	})
+}
+
+// HardDeleteReview handles DELETE /api/v1/reviews/{id}/permanent
+func (h *ReviewHandler) HardDeleteReview(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	err := h.reviewService.HardDeleteReview(r.Context(), id)
+	if err != nil {
+		if err.Error() == "review not found" {
+			http.Error(w, "Review not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Review permanently deleted",
+	})
+}
+
+// RestoreReview handles PUT /api/v1/reviews/{id}/restore
+func (h *ReviewHandler) RestoreReview(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	reviewID := vars["id"]
+
+	if reviewID == "" {
+		http.Error(w, "Review ID is required", http.StatusBadRequest)
+		return
+	}
+
+	review, err := h.reviewService.RestoreReview(r.Context(), reviewID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"data":    review,
+		"message": "Review restored successfully",
+	})
+}

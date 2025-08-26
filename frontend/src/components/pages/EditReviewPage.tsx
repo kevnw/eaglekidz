@@ -24,6 +24,7 @@ import {
   RobotOutlined
 } from '@ant-design/icons';
 import { apiService, UpdateReviewRequest, Review } from '../../services/api';
+import TipTapEditor from '../TipTapEditor';
 import dayjs from 'dayjs';
 
 const { Title, Paragraph, Text } = Typography;
@@ -110,10 +111,10 @@ const EditReviewPage: React.FC = () => {
       setError(null);
 
       const updateData: UpdateReviewRequest = {
-        what_went_well: values.whatWentWell.trim(),
-        can_improve: values.canImprove.trim(),
-        action_plans: values.actionPlans.trim(),
-        summary: values.summary.trim()
+        what_went_well: values.whatWentWell?.trim() || '',
+        can_improve: values.canImprove?.trim() || '',
+        action_plans: values.actionPlans?.trim() || '',
+        summary: values.summary?.trim() || ''
       };
 
       const response = await apiService.updateReview(reviewId, updateData);
@@ -313,9 +314,17 @@ const EditReviewPage: React.FC = () => {
                 <Title level={4} style={{ color: '#722ed1', marginBottom: '8px' }}>
                   Summary:
                 </Title>
-                <Paragraph style={{ background: '#f9f0ff', padding: '12px', borderRadius: '6px', margin: 0 }}>
-                  {updatedReview.summary}
-                </Paragraph>
+                <div 
+                  style={{ 
+                    background: '#f9f0ff', 
+                    padding: '12px', 
+                    borderRadius: '6px', 
+                    margin: 0,
+                    fontSize: '14px',
+                    lineHeight: '1.5'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: updatedReview.summary }}
+                />
               </div>
             </Space>
           </Card>
@@ -474,16 +483,10 @@ const EditReviewPage: React.FC = () => {
                     </Button>
                   </Space>
                 }
-                rules={[
-                  { required: true, message: 'Please provide a summary' },
-                  { whitespace: true, message: 'Please enter valid content' }
-                ]}
               >
-                <TextArea
+                <TipTapEditor
                   placeholder="Provide an overall summary of the week..."
-                  maxLength={500}
-                  rows={3}
-                  showCount
+                  height="120px"
                 />
               </Form.Item>
 

@@ -39,6 +39,7 @@ func (s *ReviewService) CreateReview(ctx context.Context, req models.CreateRevie
 		CanImprove:   req.CanImprove,
 		ActionPlans:  req.ActionPlans,
 		Summary:      req.Summary,
+		Deleted:      false,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -77,7 +78,7 @@ func (s *ReviewService) GetReviewsByWeekID(ctx context.Context, weekID string) (
 		return nil, fmt.Errorf("invalid week ID: %v", err)
 	}
 
-	cursor, err := s.collection.Find(ctx, bson.M{"week_id": weekObjID})
+	cursor, err := s.collection.Find(ctx, bson.M{"week_id": weekObjID, "deleted": bson.M{"$ne": true}})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get reviews: %v", err)
 	}
@@ -101,7 +102,7 @@ func (s *ReviewService) GetReviewsByWeekID(ctx context.Context, weekID string) (
 
 // GetAllReviews retrieves all reviews
 func (s *ReviewService) GetAllReviews(ctx context.Context) ([]*models.Review, error) {
-	cursor, err := s.collection.Find(ctx, bson.M{})
+	cursor, err := s.collection.Find(ctx, bson.M{"deleted": bson.M{"$ne": true}})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get reviews: %v", err)
 	}
@@ -157,21 +158,107 @@ func (s *ReviewService) UpdateReview(ctx context.Context, id string, req models.
 	return s.GetReviewByID(ctx, id)
 }
 
-// DeleteReview deletes a review by its ID
+// DeleteReview soft deletes a review by its ID
 func (s *ReviewService) DeleteReview(ctx context.Context, id string) error {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return fmt.Errorf("invalid review ID: %v", err)
 	}
 
-	result, err := s.collection.DeleteOne(ctx, bson.M{"_id": objID})
+	update := bson.M{
+		"$set": bson.M{
+			"deleted":    true,
+			"updated_at": time.Now(),
+		},
+	}
+
+	result, err := s.collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
 	if err != nil {
 		return fmt.Errorf("failed to delete review: %v", err)
 	}
 
-	if result.DeletedCount == 0 {
+	if result.ModifiedCount == 0 {
 		return fmt.Errorf("review not found")
 	}
 
 	return nil
+}
+
+// GetDeletedReviewsByWeekID retrieves all deleted reviews for a specific week
+func (s *ReviewService) GetDeletedReviewsByWeekID(ctx context.Context, weekID string) ([]*models.Review, error) {
+	weekObjID, err := primitive.ObjectIDFromHex(weekID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid week ID: %v", err)
+	}
+
+	cursor, err := s.collection.Find(ctx, bson.M{"week_id": weekObjID, "deleted": true})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get deleted reviews: %v", err)
+	}
+	defer cursor.Close(ctx)
+
+	var reviews []*models.Review
+	for cursor.Next(ctx) {
+		var review models.Review
+		if err := cursor.Decode(&review); err != nil {
+			return nil, fmt.Errorf("failed to decode review: %v", err)
+		}
+		reviews = append(reviews, &review)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("cursor error: %v", err)
+	}
+
+	return reviews, nil
+}
+
+// HardDeleteReview permanently deletes a review by its ID
+func (s *ReviewService) HardDeleteReview(ctx context.Context, id string) error {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("invalid review ID: %v", err)
+	}
+
+	filter := bson.M{"_id": objID}
+	_, err = s.collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("failed to permanently delete review: %v", err)
+	}
+
+	return nil
+}
+
+// RestoreReview restores a soft-deleted review by setting deleted flag to false
+func (s *ReviewService) RestoreReview(ctx context.Context, id string) (*models.Review, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid review ID: %v", err)
+	}
+
+	filter := bson.M{"_id": objID, "deleted": true}
+	update := bson.M{
+		"$set": bson.M{
+			"deleted":    false,
+			"updated_at": time.Now(),
+		},
+	}
+
+	result := s.collection.FindOneAndUpdate(ctx, filter, update)
+	if result.Err() != nil {
+		if result.Err() == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("deleted review not found")
+		}
+		return nil, fmt.Errorf("failed to restore review: %v", result.Err())
+	}
+
+	// Get the updated review
+	var review models.Review
+	filter = bson.M{"_id": objID}
+	err = s.collection.FindOne(ctx, filter).Decode(&review)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch restored review: %v", err)
+	}
+
+	return &review, nil
 }

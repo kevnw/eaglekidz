@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, Alert, Spin, Space, Row, Col, message } from 'antd';
 import { CheckCircleOutlined, EditOutlined, CloseOutlined } from '@ant-design/icons';
 import { apiService, CreateReviewRequest } from '../../services/api';
+import TipTapEditor from '../TipTapEditor';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -32,10 +33,10 @@ const CreateReview: React.FC<CreateReviewProps> = ({
     try {
       const reviewData: CreateReviewRequest = {
         week_id: weekId,
-        what_went_well: values.whatWentWell.trim(),
-        can_improve: values.canImprove.trim(),
-        action_plans: values.actionPlans.trim(),
-        summary: values.summary.trim(),
+        what_went_well: values.whatWentWell?.trim() || '',
+        can_improve: values.canImprove?.trim() || '',
+        action_plans: values.actionPlans?.trim() || '',
+        summary: values.summary?.trim() || '',
       };
 
       const response = await apiService.createReview(reviewData);
@@ -201,15 +202,10 @@ const CreateReview: React.FC<CreateReviewProps> = ({
             <Form.Item
               name="summary"
               label="Summary"
-              rules={[
-                { required: true, message: 'Please provide a summary!' },
-                { min: 10, message: 'Please provide at least 10 characters!' }
-              ]}
             >
-              <TextArea
-                rows={3}
+              <TipTapEditor
                 placeholder="Provide an overall summary of the week..."
-                style={{ borderRadius: 8 }}
+                height="120px"
               />
             </Form.Item>
 
