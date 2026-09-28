@@ -32,3 +32,10 @@ go.work
 .Trashes
 ehthumbs.db
 Thumbs.db
+# Impeccable working files (screenshots, decision pages, per-machine settings)
+.impeccable/review/
+.impeccable/decision/
+.impeccable/mocks/
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/questions/
