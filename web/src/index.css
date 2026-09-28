@@ -768,7 +768,7 @@ dialog.sheet {
 }
 
 .field input::placeholder {
-  color: #857d71;
+  color: #6f675c;
 }
 
 .handwritten-input {
@@ -1243,7 +1243,7 @@ dialog.sheet {
 }
 
 .slot-empty {
-  color: #a39a8c;
+  color: #7a7266;
 }
 
 .sched td:has(.slot-btn),

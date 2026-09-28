@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-28T12:23:10+00:00",
+  "title": "Design System: Eagle Kidz Rota",
+  "extensions": {
+    "colorMeta": {
+      "cork": {
+        "role": "neutral",
+        "displayName": "Cork",
+        "canonical": "#b5835a",
+        "tonalRamp": [
+          "#160700",
+          "#391b00",
+          "#5f3305",
+          "#805129",
+          "#a5744b",
+          "#cc986f",
+          "#f4be94",
+          "#feeadc"
+        ]
+      },
+      "cork-deep": {
+        "role": "neutral",
+        "displayName": "Cork Deep",
+        "canonical": "#8c603c",
+        "tonalRamp": [
+          "#160700",
+          "#371c04",
+          "#5d340e",
+          "#7d522f",
+          "#a37551",
+          "#c99974",
+          "#f1bf99",
+          "#feeadb"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Photocopy Paper",
+        "canonical": "#fbfaf6",
+        "tonalRamp": [
+          "#0c0b09",
+          "#252421",
+          "#40403d",
+          "#5e5e5a",
+          "#81807d",
+          "#a5a5a1",
+          "#cbcac7",
+          "#efeeea"
+        ]
+      },
+      "paper-shade": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "#f1ede3",
+        "tonalRamp": [
+          "#0e0b05",
+          "#27241c",
+          "#433f37",
+          "#615d55",
+          "#838077",
+          "#a8a49b",
+          "#cecac0",
+          "#f2eee4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1b1a17",
+        "tonalRamp": [
+          "#0c0b08",
+          "#252421",
+          "#41403c",
+          "#5f5d5a",
+          "#81807c",
+          "#a6a4a0",
+          "#cccac6",
+          "#f0eeea"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#5d564c",
+        "tonalRamp": [
+          "#0f0a04",
+          "#29231a",
+          "#453f35",
+          "#645c52",
+          "#867f74",
+          "#aba398",
+          "#d1c9be",
+          "#f6ede1"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Pencil Rule",
+        "canonical": "#d9d3c6",
+        "tonalRamp": [
+          "#0f0b03",
+          "#28231a",
+          "#443f35",
+          "#625d52",
+          "#858074",
+          "#aaa498",
+          "#d0cabd",
+          "#f4eee1"
+        ]
+      },
+      "hl-sic": {
+        "role": "secondary",
+        "displayName": "Highlighter Yellow",
+        "canonical": "#f7e27a",
+        "tonalRamp": [
+          "#0f0b00",
+          "#2a2404",
+          "#4a4002",
+          "#6b5e11",
+          "#92801d",
+          "#baa539",
+          "#e0cb63",
+          "#fff0a7"
+        ]
+      },
+      "hl-new": {
+        "role": "secondary",
+        "displayName": "Highlighter Blue",
+        "canonical": "#c3d7f5",
+        "tonalRamp": [
+          "#010a1e",
+          "#15243b",
+          "#304059",
+          "#4d5f78",
+          "#6f819d",
+          "#93a6c3",
+          "#b8ccea",
+          "#e5effe"
+        ]
+      },
+      "ballpoint": {
+        "role": "tertiary",
+        "displayName": "Ballpoint Blue",
+        "canonical": "#1f3a93",
+        "tonalRamp": [
+          "#010134",
+          "#06116b",
+          "#1b358d",
+          "#3656b1",
+          "#567ad9",
+          "#7da1f9",
+          "#b5cafa",
+          "#e7effe"
+        ]
+      },
+      "brand": {
+        "role": "primary",
+        "displayName": "Eagle Red-Orange",
+        "canonical": "#c8401a",
+        "tonalRamp": [
+          "#1c0300",
+          "#440e02",
+          "#71200a",
+          "#a42d08",
+          "#d54c28",
+          "#f87a5a",
+          "#fdb7a5",
+          "#fee9e4"
+        ]
+      },
+      "brand-deep": {
+        "role": "primary",
+        "displayName": "Deep Eagle Red",
+        "canonical": "#9e3013",
+        "tonalRamp": [
+          "#1c0200",
+          "#460d01",
+          "#721e07",
+          "#a13316",
+          "#ca583d",
+          "#f37e61",
+          "#ffb6a3",
+          "#ffe9e3"
+        ]
+      },
+      "lined": {
+        "role": "neutral",
+        "displayName": "Lined-Paper Blue",
+        "canonical": "#c9d6ea",
+        "tonalRamp": [
+          "#040b18",
+          "#1b2433",
+          "#364050",
+          "#535e70",
+          "#758193",
+          "#99a5b9",
+          "#bfcbdf",
+          "#e6effe"
+        ]
+      },
+      "margin-line": {
+        "role": "neutral",
+        "displayName": "Margin Red",
+        "canonical": "#e2a497",
+        "tonalRamp": [
+          "#1d0100",
+          "#421209",
+          "#622f25",
+          "#834d42",
+          "#a96f63",
+          "#d09387",
+          "#f8b9ab",
+          "#fee9e5"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Sheet title, one per sheet."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Service column heads, phone service caption, month label."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section heads, report field labels, grouping heads, report card service names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose and sheet sub-lines, 62ch max."
+      },
+      "name": {
+        "displayName": "Name",
+        "purpose": "Minister names in cells, picks, chips and checkboxes."
+      },
+      "role": {
+        "displayName": "Role",
+        "purpose": "Left-column role labels in every rota table."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field captions, fill counts, week numbers, tab labels; 0.75rem for sub-parts and age tags."
+      },
+      "hand": {
+        "displayName": "Hand",
+        "purpose": "Handwritten notes, action plans and report answers in ballpoint blue."
+      }
+    },
+    "shadows": [
+      {
+        "name": "paper-drop",
+        "value": "0 1px 1px rgb(40 22 8 / 0.18), 0 10px 22px -10px rgb(40 22 8 / 0.55)",
+        "purpose": "Any paper object lying on the cork; active week and top tabs."
+      },
+      {
+        "name": "resting-tab",
+        "value": "0 1px 1px rgb(40 22 8 / 0.2)",
+        "purpose": "Inactive semi-transparent paper tabs."
+      },
+      {
+        "name": "pin",
+        "value": "drop-shadow(1px 3px 2px rgb(40 22 8 / 0.45))",
+        "purpose": "Push pins only (as a filter)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Shared easing for every paper movement."
+      },
+      {
+        "name": "pin-in",
+        "value": "420ms; from translateY(-12px) rotate(-0.6deg)",
+        "purpose": "A page settling onto the board."
+      },
+      {
+        "name": "sheet-up",
+        "value": "360ms; from translateY(40px)",
+        "purpose": "Editor dialogs rising into place."
+      },
+      {
+        "name": "draw-ring",
+        "value": "650ms; clip-path inset(0 100% 0 0) to inset(0)",
+        "purpose": "Ballpoint ring sweeping round the viewer name when they pick themself."
+      },
+      {
+        "name": "tone-hover",
+        "value": "150-200ms background-color",
+        "purpose": "Paper-shade hover on cells, picks, tabs and cards."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation and transition none",
+        "purpose": "All motion removed under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "max-width: 639px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "960px"
+      },
+      {
+        "name": "lg",
+        "value": "1100px"
+      },
+      {
+        "name": "board-max",
+        "value": "1320px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Eagle red-orange action, one per sheet or dialog (Write report, Save).",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M13 21h8\"/><path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/></svg> Write report</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border:0;border-radius:1px;font:700 1.0625rem/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;transition:background-color 160ms, transform 160ms cubic-bezier(0.16,1,0.3,1);background:#c8401a;color:#fff;box-shadow:0 1px 1px rgb(40 22 8 / 0.25);} .ds-btn-primary:hover{background:#9e3013;} .ds-btn-primary:active{transform:translateY(1px);} .ds-btn-primary:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;} .ds-btn-primary:disabled{background:#d9d3c6;color:#5d564c;box-shadow:none;cursor:not-allowed;}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Underlined ink text action for Cancel, Copy from last week, Access actions.",
+      "html": "<button class=\"ds-btn-quiet\">Cancel</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border:0;border-radius:1px;font:700 1.0625rem/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;transition:background-color 160ms, transform 160ms cubic-bezier(0.16,1,0.3,1);background:transparent;color:#1b1a17;text-decoration:underline;text-decoration-thickness:1px;} .ds-btn-quiet:hover{background:#f1ede3;} .ds-btn-quiet:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;}"
+    },
+    {
+      "name": "Paper Button",
+      "kind": "button",
+      "refersTo": "button-paper",
+      "description": "A paper scrap on the cork for sign in and sign out.",
+      "html": "<div class=\"ds-cork\"><button class=\"ds-paper-btn\">Sign in</button></div>",
+      "css": ".ds-cork{padding:16px;background:#b5835a;} .ds-paper-btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 12px;border:0;background:#fbfaf6;color:#1b1a17;box-shadow:0 1px 1px rgb(40 22 8 / 0.18), 0 10px 22px -10px rgb(40 22 8 / 0.55);font:700 0.9375rem/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;} .ds-paper-btn:hover{background:#fff;} .ds-paper-btn:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;}"
+    },
+    {
+      "name": "Underline Field",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "Label-type caption over an underline-only input.",
+      "html": "<label class=\"ds-field\"><span>Guest name</span><input placeholder=\"e.g. PS Inge\"></label>",
+      "css": ".ds-field{display:grid;gap:6px;max-width:320px;} .ds-field span{font:600 0.8125rem/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:#5d564c;} .ds-field input{min-height:44px;padding:8px 2px;border:0;border-bottom:1.5px solid #1b1a17;border-radius:0;background:transparent;font:400 1.125rem/1.5 Barlow,system-ui,sans-serif;color:#1b1a17;caret-color:#1f3a93;} .ds-field input:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;}"
+    },
+    {
+      "name": "Service Switch",
+      "kind": "nav",
+      "refersTo": "segmented-option",
+      "description": "Segmented ink boxes choosing one service on phones.",
+      "html": "<div class=\"ds-seg\" role=\"radiogroup\"><label><input type=\"radio\" name=\"ds-svc\" checked><span>9 AM</span></label><label><input type=\"radio\" name=\"ds-svc\"><span>11 AM</span></label><label><input type=\"radio\" name=\"ds-svc\"><span>1 PM</span></label><label><input type=\"radio\" name=\"ds-svc\"><span>VT</span></label></div>",
+      "css": ".ds-seg{display:flex;max-width:400px;} .ds-seg label{flex:1 1 auto;position:relative;} .ds-seg input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;} .ds-seg span{display:flex;align-items:center;justify-content:center;min-height:44px;padding:6px 12px;border:1.5px solid #1b1a17;margin-left:-1.5px;font:600 1rem/1 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.04em;color:#1b1a17;background:#fbfaf6;transition:background-color 150ms;} .ds-seg label:first-child span{margin-left:0;} .ds-seg input:checked+span{background:#1b1a17;color:#fbfaf6;} .ds-seg input:hover:not(:checked)+span{background:#f1ede3;} .ds-seg input:focus-visible+span{outline:2.5px solid #1f3a93;outline-offset:2px;position:relative;z-index:1;}"
+    },
+    {
+      "name": "Pick",
+      "kind": "chip",
+      "refersTo": "pick",
+      "description": "Ink-boxed name toggle in the slot editor; selected inverts to ink.",
+      "html": "<div class=\"ds-picks\"><button class=\"ds-pick\" aria-pressed=\"true\">Kimberly</button><button class=\"ds-pick\" aria-pressed=\"false\">Wesly</button></div>",
+      "css": ".ds-picks{display:flex;flex-wrap:wrap;gap:8px;} .ds-pick{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border:1.5px solid #1b1a17;background:transparent;color:#1b1a17;font:500 1rem/1.5 Barlow,system-ui,sans-serif;cursor:pointer;transition:background-color 150ms;} .ds-pick:hover{background:#f1ede3;} .ds-pick[aria-pressed='true']{background:#1b1a17;color:#fbfaf6;} .ds-pick:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;}"
+    },
+    {
+      "name": "Pinned Sheet",
+      "kind": "card",
+      "refersTo": "sheet",
+      "description": "Photocopy paper on cork with two red pins and the paper drop.",
+      "html": "<div class=\"ds-cork2\"><article class=\"ds-sheet\"><svg class=\"ds-pin ds-pin-l\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><circle cx=\"10\" cy=\"10\" r=\"7\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"2\" class=\"ds-pin-shine\"/></svg><svg class=\"ds-pin ds-pin-r\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><circle cx=\"10\" cy=\"10\" r=\"7\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"2\" class=\"ds-pin-shine\"/></svg><h2 class=\"ds-sheet-title\">Sunday 4 October</h2><p class=\"ds-sheet-sub\">Week 1 of October</p><p class=\"ds-hand\">Kevin T: SIC at 9 AM; ST Sermon at 9 AM.</p></article></div>",
+      "css": ".ds-cork2{padding:24px 16px;background:#b5835a;} .ds-sheet{position:relative;padding:30px 28px 24px;background:#fbfaf6;color:#1b1a17;box-shadow:0 1px 1px rgb(40 22 8 / 0.18), 0 10px 22px -10px rgb(40 22 8 / 0.55);} .ds-pin{position:absolute;top:8px;width:18px;height:18px;fill:#c8401a;filter:drop-shadow(1px 3px 2px rgb(40 22 8 / 0.45));} .ds-pin .ds-pin-shine{fill:#f08a64;} .ds-pin-l{left:12px;} .ds-pin-r{right:12px;} .ds-sheet-title{margin:10px 0 0;font:700 clamp(1.875rem,7vw,3rem)/0.95 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:-0.005em;text-transform:uppercase;} .ds-sheet-sub{margin:8px 0 12px;color:#5d564c;font:400 1rem/1.5 Barlow,system-ui,sans-serif;} .ds-hand{margin:0;font:400 1.25rem/1.35 Kalam,'Bradley Hand',cursive;color:#1f3a93;}"
+    },
+    {
+      "name": "Rota Table",
+      "kind": "custom",
+      "refersTo": "table-header",
+      "description": "Ink-ruled role table with a paper-shade service head, SIC row, marked names and an ink age-group bar.",
+      "html": "<table class=\"ds-sched\"><thead><tr><td></td><th>9 AM<span class=\"ds-count\">14/14</span></th></tr></thead><tbody><tr><th class=\"ds-role ds-role-sic\">SIC</th><td><span class=\"ds-name ds-hl-sic\">Kevin T<svg class=\"ds-ring\" viewBox=\"0 0 120 44\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M9 25C6 13 34 5 62 5c30 0 55 6 54 18-1 12-27 17-56 17C31 40 7 35 5 24 4 16 17 9 33 7\"/></svg></span></td></tr><tr><th class=\"ds-role\">Host</th><td><span class=\"ds-name ds-hl-new\">Wesly</span></td></tr></tbody><tbody><tr class=\"ds-group\"><th colspan=\"2\">LE · Little Eagle</th></tr><tr><th class=\"ds-role\">Sermon<span class=\"ds-part\">Production</span></th><td><span class=\"ds-name\">Dewina</span></td></tr></tbody></table>",
+      "css": ".ds-sched{width:100%;max-width:420px;border-collapse:collapse;border:1.5px solid #1b1a17;background:#fbfaf6;color:#1b1a17;font:400 1.0625rem/1.5 Barlow,system-ui,sans-serif;} .ds-sched th,.ds-sched td{border:1px solid #1b1a17;padding:8px 12px;text-align:left;vertical-align:middle;} .ds-sched thead th{padding:10px 12px 8px;background:#f1ede3;font:700 1.375rem/1.05 'Barlow Condensed','Arial Narrow',sans-serif;text-transform:uppercase;} .ds-sched thead td{border-top-color:transparent;border-left-color:transparent;} .ds-count{display:block;margin-top:3px;font:600 0.8125rem/1.2 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.04em;color:#5d564c;font-variant-numeric:tabular-nums;} .ds-role{width:9.5rem;font:700 0.9375rem/1.15 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.04em;text-transform:uppercase;} .ds-role-sic{background:#f1ede3;} .ds-part{display:block;font:600 0.75rem/1.3 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.08em;color:#5d564c;} .ds-group th{padding:6px 12px 5px;background:#1b1a17;color:#fbfaf6;font:700 0.875rem/1.2 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.1em;text-transform:uppercase;} .ds-name{position:relative;display:inline-block;padding:0 0.28em;margin:0 -0.28em;font-weight:500;} .ds-hl-sic,.ds-hl-new{border-radius:3px 9px 4px 10px / 9px 3px 10px 4px;} .ds-hl-sic{background:#f7e27a;} .ds-hl-new{background:#c3d7f5;} .ds-ring{position:absolute;inset:-9px -9px -8px;width:calc(100% + 18px);height:calc(100% + 17px);overflow:visible;pointer-events:none;} .ds-ring path{fill:none;stroke:#1f3a93;stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke;}"
+    },
+    {
+      "name": "Action-Plan Slip",
+      "kind": "custom",
+      "description": "Last time's action plans pinned under a service, askew, in ballpoint.",
+      "html": "<div class=\"ds-desk\"><div class=\"ds-slip\"><svg class=\"ds-pin ds-slip-pin\" viewBox=\"0 0 20 20\" aria-hidden=\"true\"><circle cx=\"10\" cy=\"10\" r=\"7\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"2\" class=\"ds-pin-shine\"/></svg><p class=\"ds-slip-head\">Action plans from 27 Sep</p><p class=\"ds-slip-body\">Bring extra crayons for LE.\nStart worship 5 minutes earlier.</p></div></div>",
+      "css": ".ds-desk{padding:24px;background:#fbfaf6;} .ds-slip{position:relative;max-width:280px;padding:10px 12px;background:#fffdf2;box-shadow:0 1px 1px rgb(40 22 8 / 0.18), 0 10px 22px -10px rgb(40 22 8 / 0.55);transform:rotate(-0.6deg);} .ds-slip-pin{position:absolute;top:-7px;left:50%;margin-left:-9px;width:18px;height:18px;fill:#c8401a;filter:drop-shadow(1px 3px 2px rgb(40 22 8 / 0.45));} .ds-slip-pin .ds-pin-shine{fill:#f08a64;} .ds-slip-head{margin:0 0 4px;font:600 0.75rem/1.2 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:#5d564c;} .ds-slip-body{margin:0;font:400 1.0625rem/1.35 Kalam,'Bradley Hand',cursive;color:#1f3a93;white-space:pre-line;}"
+    },
+    {
+      "name": "Week Tab",
+      "kind": "nav",
+      "description": "One tab per Sunday: week number, date, A/B letter box; the selected Sunday lifts with an ink underline.",
+      "html": "<div class=\"ds-cork3\"><a href=\"#\" class=\"ds-wt\" aria-current=\"date\"><span class=\"ds-wt-week\">Week 1</span><span class=\"ds-wt-day\">4 Oct</span><span class=\"ds-wt-letter\">A</span></a><a href=\"#\" class=\"ds-wt\"><span class=\"ds-wt-week\">Week 2</span><span class=\"ds-wt-day\">11 Oct</span><span class=\"ds-wt-letter\">B</span></a></div>",
+      "css": ".ds-cork3{display:grid;grid-template-columns:repeat(2,160px);gap:6px;padding:16px;background:#b5835a;} .ds-wt{position:relative;display:grid;grid-template-columns:1fr auto;align-items:end;min-height:60px;padding:8px 8px 7px;background:rgb(251 250 246 / 0.72);color:#1b1a17;text-decoration:none;font-variant-numeric:tabular-nums;box-shadow:0 1px 1px rgb(40 22 8 / 0.2);transition:background-color 200ms;} .ds-wt:hover{background:#fbfaf6;} .ds-wt:focus-visible{outline:2.5px solid #1f3a93;outline-offset:2px;} .ds-wt[aria-current='date']{background:#fbfaf6;box-shadow:0 1px 1px rgb(40 22 8 / 0.18), 0 10px 22px -10px rgb(40 22 8 / 0.55);} .ds-wt[aria-current='date']::after{content:'';position:absolute;inset:auto 8px 0;height:3px;background:#1b1a17;} .ds-wt-week{grid-column:1;font:700 0.75rem/1.2 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:0.06em;text-transform:uppercase;color:#5d564c;} .ds-wt-day{grid-column:1;font:700 1.25rem/1.1 'Barlow Condensed','Arial Narrow',sans-serif;} .ds-wt-letter{grid-column:2;grid-row:1 / span 2;align-self:start;display:grid;place-items:center;width:1.4rem;height:1.4rem;border:1.5px solid #1b1a17;font:700 0.875rem/1 'Barlow Condensed','Arial Narrow',sans-serif;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Corkboard Rota",
+    "overview": "The app is the rota sheet pinned outside the children's hall. A cork board carries photocopy-white sheets; each sheet is a printed grid of services by names with hard black rules and condensed printed headers, and it is marked by hand the way the ministry lead already marks the spreadsheet: highlighter yellow for the Service in Charge, highlighter blue for a new minister, ballpoint blue for handwritten notes and for the viewer's own name. Eagle red-orange appears as pins and as the one primary action.\n\nDensity is that of a working document, not a dashboard. Names sit in ruled cells at reading size, role labels are small condensed caps in the left column, and age groups break the table with solid ink bars. Everything that is paper lies flat on the cork with one shared paper drop; a few pinned objects (the logo card, the A/B week stamp, the action-plan slip) sit slightly askew, and nothing else tilts. The world rejects the SaaS dashboard vocabulary of rounded cards, avatars and status chips.\n\nMotion is paper being pinned: a sheet settles in from slightly above and rotated, editor sheets rise from the bottom, and choosing yourself sweeps a ballpoint ring around your name. Hover states only change paper tone.",
+    "keyCharacteristics": [
+      "Cork texture ground (`/cork.jpg`, blended in luminosity over the cork color), paper sheets on top.",
+      "Hard ink grid rules (1px inner, 1.5px outer) on every table; square corners throughout.",
+      "Three pen-and-marker marks with fixed meanings: SIC yellow, new-minister blue, ballpoint.",
+      "Condensed uppercase print for structure, Barlow for names and prose, Kalam for anything written by hand.",
+      "One shadow (the paper drop) and one accent (Eagle red-orange for pins and the primary action)."
+    ],
+    "rules": [
+      {
+        "name": "The Marks Mean Things Rule",
+        "body": "Yellow is SIC, blue is new minister, ballpoint is handwriting or \"you\". These colors never decorate, never mark status, and never appear without that meaning.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pins-And-One-Action Rule",
+        "body": "Eagle red-orange is used for pins and the single primary action on a sheet. Errors use the deeper red as outline and text, never as a filled banner.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Hands Rule",
+        "body": "Print (condensed caps) for structure, type (Barlow) for names and prose, pen (Kalam in ballpoint) for what a person wrote. If a string was typed by an editor as a free note, it is set in Kalam.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Dates Rule",
+        "body": "Dates, day numbers and fill counts use tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Drop Rule",
+        "body": "Paper on cork gets the paper drop; nothing on paper gets a shadow. There are no ambient card shadows, glows or hard offset shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Askew Pin Rule",
+        "body": "Only pinned objects tilt: the logo card (-2.5deg), the week stamp (3deg) and the action-plan slip (-0.6deg). Sheets and tables stay square.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put every new surface on a paper sheet over the cork, with two red pins and the paper drop.",
+      "**Do** rule every grid of people and roles in ink: 1.5px outer frame, 1px inner rules, square corners.",
+      "**Do** mark names only with their meaning: yellow for SIC, blue for new minister, the ballpoint ring for the viewer.",
+      "**Do** set anything a person wrote (notes, action plans, report answers) in Kalam in ballpoint blue.",
+      "**Do** keep Eagle red-orange to pins and one primary action per sheet or dialog.",
+      "**Do** use condensed uppercase print for structure (titles, role labels, headers, tabs, buttons) and Barlow for names and prose.",
+      "**Do** keep touch targets at 44px or more and give focus the 2.5px ballpoint outline.",
+      "**Do** keep motion to paper settling (pin-in 420ms, editor sheet rising 360ms, ring sweep 650ms) plus tonal hovers, and honor reduced motion by removing it."
+    ],
+    "donts": [
+      "**Don't** use rounded cards, avatars, status chips or dashboard tiles; this is a sheet, not a SaaS panel.",
+      "**Don't** add shadows inside a sheet, or any shadow other than the paper drop, resting tab and pin shadow.",
+      "**Don't** tilt sheets, tables or form controls; only pinned objects sit askew.",
+      "**Don't** use highlighter yellow or blue as decoration or status color.",
+      "**Don't** fill a banner or button with red for errors or destructive actions; errors are deep-red outlines, destructive confirms are ink.",
+      "**Don't** redraw or recolor the Eagle Kidz logo; it sits as-is on its pinned white card."
+    ]
+  }
+}
