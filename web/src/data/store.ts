@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Minister, Placement, Report, ServiceId, Session, State } from './types';
+import type { Minister, Placement, Report, ServiceId, Session, State, Unavailability } from './types';
 
 // Client cache of the API. Writes update the cache first so the sheet responds at once,
 // then reload from the server if the request fails.
@@ -17,6 +17,7 @@ let state: State = {
   ministers: [],
   placements: [],
   reports: [],
+  unavailability: [],
   schedule: {},
   session: null,
   viewerId: readViewer(),
@@ -54,12 +55,12 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
   return data as T;
 }
 
-type Bootstrap = Pick<State, 'ministers' | 'placements' | 'reports' | 'schedule'> & { me: Session | null };
+type Bootstrap = Pick<State, 'ministers' | 'placements' | 'reports' | 'schedule' | 'unavailability'> & { me: Session | null };
 
 export async function reload() {
   try {
     const d = await api<Bootstrap>('bootstrap');
-    set({ ministers: d.ministers, placements: d.placements, reports: d.reports, schedule: d.schedule, session: d.me, status: 'ready', error: null });
+    set({ ministers: d.ministers, placements: d.placements, reports: d.reports, schedule: d.schedule, unavailability: d.unavailability ?? [], session: d.me, status: 'ready', error: null });
   } catch (e) {
     set({ status: state.status === 'ready' ? 'ready' : 'error', error: (e as Error).message });
   }
@@ -108,6 +109,13 @@ export const actions = {
   async copySchedule(from: string, to: string) {
     await write(null, () => api('cells/copy', { method: 'POST', body: { from, to } }));
     await reload();
+  },
+  async markAway(u: Omit<Unavailability, 'id'>) {
+    const saved = await write(null, () => api<Unavailability>('unavailability', { method: 'POST', body: u }));
+    set({ unavailability: [...state.unavailability, saved] });
+  },
+  removeAway(id: string) {
+    return write({ unavailability: state.unavailability.filter((u) => u.id !== id) }, () => api(`unavailability/${id}`, { method: 'DELETE' }));
   },
   async addMinister(name: string, isNew = false) {
     const m = await write(null, () => api<Minister>('ministers', { method: 'POST', body: { name, isNew } }));
@@ -179,4 +187,13 @@ export function previousReport(s: State, service: ServiceId, date: string) {
   return s.reports
     .filter((r) => r.service === service && r.date < date && r.actionPlans.trim())
     .sort((a, b) => b.date.localeCompare(a.date))[0];
+}
+
+/** Who is away on a given Sunday, one entry per person. */
+export function awayOn(s: State, date: string) {
+  return s.unavailability.filter((u) => u.from <= date && date <= u.to);
+}
+
+export function isAway(s: State, ministerId: string, date: string) {
+  return s.unavailability.some((u) => u.ministerId === ministerId && u.from <= date && date <= u.to);
 }

@@ -50,6 +50,16 @@ export interface Report {
   updatedAt: string;
 }
 
+/** A minister who can't serve on the Sundays from `from` to `to` (inclusive). */
+export interface Unavailability {
+  id: string;
+  ministerId: string;
+  from: string;
+  to: string;
+  /** Only sent to the lead and SICs. */
+  note?: string;
+}
+
 export interface Session {
   role: 'lead' | 'sic';
   name: string;
@@ -61,6 +71,7 @@ export interface State {
   ministers: Minister[];
   placements: Placement[];
   reports: Report[];
+  unavailability: Unavailability[];
   /** Weekly schedule: `date|service|slot` → minister ids, or a plain name for someone outside the list. */
   schedule: Record<string, string[]>;
   session: Session | null;

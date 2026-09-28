@@ -81,7 +81,9 @@ export function createHandler(cfg: Config) {
     if (path === 'bootstrap' && method === 'GET') {
       const ministers = data.ministers.map(({ id, name, isNew }) => ({ id, name, isNew }));
       const me = user && { role: user.session.role, name: user.name, ministerId: user.ministerId };
-      if (!user) return json({ me: null, ministers, schedule: data.schedule, placements: [], reports: [] });
+      // Viewers see who's away, but not why.
+      const unavailability = data.unavailability.map(({ note: _note, ...u }) => u);
+      if (!user) return json({ me: null, ministers, schedule: data.schedule, unavailability, placements: [], reports: [] });
       return json({ me, ...data });
     }
 
@@ -133,6 +135,24 @@ export function createHandler(cfg: Config) {
       const copied = Object.entries(data.schedule).filter(([k]) => k.startsWith(`${body.from}|`));
       for (const [k, people] of copied) await repo.setCell(k.replace(body.from as string, body.to as string), people);
       return json({ copied: copied.length });
+    }
+
+    /* Unavailability */
+    if (parts[0] === 'unavailability') {
+      requireEditor();
+      if (method === 'POST') {
+        const ministerId = str(body.ministerId, 100);
+        if (!data.ministers.some((m) => m.id === ministerId)) throw new HttpError(400, 'Choose who is away.');
+        if (!isDate(body.from) || !isDate(body.to)) throw new HttpError(400, 'Pick the Sundays they’re away.');
+        const [from, to] = [body.from, body.to].sort();
+        const u = { id: randomUUID(), ministerId, from, to, note: str(body.note, 200).trim() || undefined };
+        await repo.addUnavailability(u);
+        return json(u, 201);
+      }
+      if (method === 'DELETE' && parts[1]) {
+        await repo.deleteUnavailability(parts[1]);
+        return json({ ok: true });
+      }
     }
 
     /* Ministers */

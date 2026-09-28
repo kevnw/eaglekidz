@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Check, ChevronDown, Plus, X } from 'lucide-react';
 import { formatLong, weekLetter } from '../data/dates';
-import { actions, cell, personName, useStore } from '../data/store';
+import { actions, cell, isAway, personName, useStore } from '../data/store';
 import { SCHEDULE_ORDER, cellKey, slotLabel } from '../data/schedule';
 import type { ScheduleService } from '../data/schedule';
 
@@ -53,10 +53,13 @@ export function SlotEditor({ at, onClose }: { at: SlotRef; onClose: () => void }
 
   const option = (id: string) => {
     const on = people.includes(id);
+    // Someone away can still be taken out of a slot, but not put into one.
+    const away = isAway(s, id, at.date);
     return (
-      <button key={id} type="button" className="pick" aria-pressed={on} onClick={() => toggle(id)}>
+      <button key={id} type="button" className={`pick ${away ? 'pick-away' : ''}`} aria-pressed={on} disabled={away && !on} onClick={() => toggle(id)}>
         {on ? <Check size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
         {personName(s, id)}
+        {away && <span className="away-tag">away</span>}
       </button>
     );
   };

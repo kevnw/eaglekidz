@@ -37,6 +37,7 @@ A tool built for one children's ministry and the way it actually runs: weeks, se
   - Per week there is also "Prepare activity LE/AS" and "Prepare activity ST".
   - Guests who aren't on the list can fill a slot (for example "PS Inge").
 - **Weekly report:** written per service and Sunday, with *What went well*, *What can be improved* and *Action plans*. There is no AI summary.
+- **Unavailability:** the lead and SICs mark a minister away for one Sunday or a range of Sundays, with an optional note that only editors see. Everyone sees who's away. People who are away can't be picked for a slot, and existing assignments that clash are crossed out.
 - **Permissions:** only the ministry lead and the SICs sign in, and they edit the schedule, grouping and reports. Everyone else reads the monthly schedule without signing in. The lead sets SIC passwords.
 - Volunteers often use it on a phone around the time of a service.
 

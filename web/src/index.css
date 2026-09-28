@@ -1827,3 +1827,121 @@ details[open] > summary .summary-chevron {
     display: none;
   }
 }
+
+/* ---------- Unavailability ---------- */
+
+.away {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 0 0 18px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.away-head {
+  margin: 0;
+  font: 700 0.9375rem/1.2 var(--f-print);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.away-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.away-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+.away-name {
+  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.away-range {
+  font: 600 0.8125rem/1 var(--f-print);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.away-item .handwritten {
+  font-size: 1rem;
+}
+
+.away-remove {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  align-self: center;
+}
+
+.away-none {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.away-clash {
+  flex-basis: 100%;
+  margin: 0;
+  font-weight: 500;
+  color: var(--brand-deep);
+}
+
+.away-add {
+  margin-left: auto;
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 0.9375rem;
+}
+
+/* Crossed out like the sheet does: still readable, clearly not serving. */
+.slot-name.is-away .name {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  color: var(--ink-soft);
+}
+
+.away-tag {
+  margin-left: 4px;
+  padding: 1px 5px 0;
+  border: 1.5px solid currentColor;
+  font: 700 0.75rem/1.2 var(--f-print);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-deep);
+}
+
+.pick-away:disabled {
+  border-style: dashed;
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.pick-away .away-tag {
+  color: var(--ink-soft);
+}
+
+.field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+@media (max-width: 639px) {
+  .field-pair {
+    grid-template-columns: 1fr;
+  }
+}

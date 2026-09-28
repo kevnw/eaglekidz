@@ -2,13 +2,14 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import postgres from 'postgres';
 import { seedState } from '../src/data/seed';
-import type { Minister, Placement, Report } from '../src/data/types';
+import type { Minister, Placement, Report, Unavailability } from '../src/data/types';
 
 export interface Data {
   ministers: Minister[];
   placements: Placement[];
   schedule: Record<string, string[]>;
   reports: Report[];
+  unavailability: Unavailability[];
 }
 
 export interface Account {
@@ -25,6 +26,8 @@ export interface Repo {
   setCell(key: string, people: string[]): Promise<void>;
   upsertReport(r: Report): Promise<void>;
   deleteReport(id: string): Promise<void>;
+  addUnavailability(u: Unavailability): Promise<void>;
+  deleteUnavailability(id: string): Promise<void>;
   accounts(): Promise<Account[]>;
   setAccount(a: Account): Promise<void>;
   deleteAccount(ministerId: string): Promise<void>;
@@ -33,7 +36,7 @@ export interface Repo {
 /** Real ministry data only: the grouping and the October schedule. Sample reports stay out of the database. */
 function initialData(): Data {
   const { ministers, placements, schedule } = seedState();
-  return { ministers, placements, schedule, reports: [] };
+  return { ministers, placements, schedule, reports: [], unavailability: [] };
 }
 
 /* ---------- Postgres (Railway) ---------- */
@@ -54,6 +57,9 @@ export function postgresRepo(url: string, max = 5): Repo {
         id text primary key, date text not null, service text not null,
         went_well text not null default '', can_improve text not null default '', action_plans text not null default '',
         updated_at timestamptz not null default now(), unique (date, service))`;
+      await sql`create table if not exists unavailability (
+        id text primary key, minister_id text not null references ministers(id) on delete cascade,
+        from_date text not null, to_date text not null, note text)`;
       await sql`create table if not exists accounts (minister_id text primary key references ministers(id) on delete cascade, password_hash text not null)`;
 
       const [{ count }] = await sql`select count(*)::int as count from ministers`;
@@ -73,11 +79,12 @@ export function postgresRepo(url: string, max = 5): Repo {
   return {
     async load() {
       await init();
-      const [ms, ps, cs, rs] = await Promise.all([
+      const [ms, ps, cs, rs, us] = await Promise.all([
         sql`select id, name, is_new from ministers order by name`,
         sql`select * from placements order by service, ord`,
         sql`select key, people from schedule_cells`,
         sql`select * from reports order by date desc, service`,
+        sql`select * from unavailability order by from_date`,
       ]);
       return {
         ministers: ms.map((m) => ({ id: m.id, name: m.name, isNew: m.is_new })),
@@ -90,6 +97,7 @@ export function postgresRepo(url: string, max = 5): Repo {
           id: r.id, date: r.date, service: r.service, wentWell: r.went_well, canImprove: r.can_improve,
           actionPlans: r.action_plans, updatedAt: new Date(r.updated_at).toISOString(),
         })),
+        unavailability: us.map((u) => ({ id: u.id, ministerId: u.minister_id, from: u.from_date, to: u.to_date, note: u.note ?? undefined })),
       };
     },
     async upsertMinister(m) {
@@ -133,6 +141,15 @@ export function postgresRepo(url: string, max = 5): Repo {
     async deleteReport(id) {
       await init();
       await sql`delete from reports where id = ${id}`;
+    },
+    async addUnavailability(u) {
+      await init();
+      await sql`insert into unavailability (id, minister_id, from_date, to_date, note)
+        values (${u.id}, ${u.ministerId}, ${u.from}, ${u.to}, ${u.note ?? null})`;
+    },
+    async deleteUnavailability(id) {
+      await init();
+      await sql`delete from unavailability where id = ${id}`;
     },
     async accounts() {
       await init();
@@ -181,8 +198,8 @@ export function fileRepo(path: string): Repo {
 
   return {
     async load() {
-      const { ministers, placements, schedule, reports } = read();
-      return { ministers, placements, schedule, reports };
+      const { ministers, placements, schedule, reports, unavailability = [] } = read();
+      return { ministers, placements, schedule, reports, unavailability };
     },
     upsertMinister: (m) => change((db) => upsert(db.ministers, m)),
     deleteMinister: (id) =>
@@ -190,6 +207,7 @@ export function fileRepo(path: string): Repo {
         db.ministers = db.ministers.filter((m) => m.id !== id);
         db.placements = db.placements.filter((p) => p.ministerId !== id);
         db.accounts = db.accounts.filter((a) => a.ministerId !== id);
+        db.unavailability = (db.unavailability ?? []).filter((u) => u.ministerId !== id);
         for (const [k, v] of Object.entries(db.schedule)) {
           const next = v.filter((x) => x !== id);
           if (next.length) db.schedule[k] = next;
@@ -205,6 +223,8 @@ export function fileRepo(path: string): Repo {
       }),
     upsertReport: (r) => change((db) => upsert(db.reports, r)),
     deleteReport: (id) => change((db) => void (db.reports = db.reports.filter((r) => r.id !== id))),
+    addUnavailability: (u) => change((db) => void (db.unavailability = [...(db.unavailability ?? []), u])),
+    deleteUnavailability: (id) => change((db) => void (db.unavailability = (db.unavailability ?? []).filter((u) => u.id !== id))),
     accounts: async () => read().accounts,
     setAccount: (a) =>
       change((db) => {
